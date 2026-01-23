@@ -1,0 +1,56 @@
+{
+  "champions": [
+    {
+      "id": "champion-001",
+      "name": "Stephen Hlotyak",
+      "email": "stephen.hlotyak@teradyne.com",
+      "division": "Semiconductor Test",
+      "businessUnits": ["CTD"],
+      "focusArea": "Software Engineering",
+      "timeCommitmentPct": 30,
+      "headcountCovered": 405,
+      "status": "confirmed",
+      "appointmentDate": "2026-01-21",
+      "productLines": ["UltraFlex", "J750", "T2000", "IG-XL"],
+      "notes": "First confirmed champion. Covers all CTD SW engineers across 4 product lines."
+    },
+    {
+      "id": "champion-002",
+      "name": "Jacob Pilegaard",
+      "email": "japi@universal-robots.com",
+      "division": "Robotics",
+      "businessUnits": ["UR", "MiR"],
+      "focusArea": "Software Engineering",
+      "headcountCovered": 143,
+      "status": "confirmed",
+      "appointmentDate": "2026-01-21"
+    },
+    {
+      "id": "champion-003",
+      "name": "Martin Nordentoft",
+      "email": "martin.nordentoft@teradyne-robotics.com",
+      "division": "Robotics",
+      "businessUnits": ["UR", "MiR"],
+      "focusArea": "IT",
+      "headcountCovered": 21,
+      "status": "confirmed",
+      "appointmentDate": "2026-01-21"
+    },
+    {
+      "id": "champion-004",
+      "name": "Fleur Nielsen",
+      "email": "flni@universal-robots.com",
+      "division": "Robotics",
+      "businessUnits": ["UR", "MiR"],
+      "focusArea": "Marketing",
+      "headcountCovered": 50,
+      "status": "pending"
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2026-01-23",
+    "totalOrg": 8037,
+    "totalCovered": 569,
+    "coveragePercentage": 7.1
+  }
+}
