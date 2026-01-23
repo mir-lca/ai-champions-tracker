@@ -7,13 +7,13 @@ status: deployed
 # AI Champions Coverage Tracker - Deployment Summary
 
 **Deployment Date:** January 23, 2026
-**Status:** ✅ Successfully Deployed
+**Status:** ✅ Successfully Deployed with Azure AD Authentication
 
 ## Live Application
 
 **URL:** https://mango-forest-0fc04f60f.1.azurestaticapps.net
 
-**⚠️ Note:** The app is currently publicly accessible. Azure AD authentication needs to be configured for production use.
+**🔐 Authentication:** Azure AD (Teradyne SSO) - Requires Teradyne login
 
 ## Deployment Details
 
@@ -22,8 +22,16 @@ status: deployed
 **Resource Group:** cursor-adoption-rg
 **Static Web App Name:** champions-tracker-swa-lca
 **Location:** East US 2
-**SKU:** Free
+**SKU:** Standard (upgraded from Free for custom OIDC support)
 **Custom Domain:** mango-forest-0fc04f60f.1.azurestaticapps.net
+
+### Authentication Configuration
+
+**Provider:** MiR Customer SSO (Azure AD)
+**Client ID:** c05a649d-95b5-4dd7-a1ff-f48e274538e9
+**Tenant ID:** eae846e4-996d-4b47-83b9-5f5937d358fe
+**Redirect URI:** https://mango-forest-0fc04f60f.1.azurestaticapps.net/.auth/login/teradyne/callback
+**Configuration:** `frontend/public/staticwebapp.config.json`
 
 ### GitHub Repository
 
@@ -75,43 +83,18 @@ status: deployed
 - Minimal layout with colorful visualizations
 - CSS grid-based hierarchical table
 
+### ✅ Azure AD Authentication
+
+- **Configured:** January 23, 2026
+- **Tier:** Upgraded to Standard (required for custom OIDC)
+- **Provider:** MiR Customer SSO (no user consent required)
+- **Routes:** Assets and shared components accessible before auth
+- **User Menu:** Integrated cross-app navigation widget
+- **Status:** ✅ Fully functional - requires Teradyne login
+
 ## Next Steps (Production Readiness)
 
-### 1. Configure Azure AD Authentication (High Priority)
-
-**Current State:** App is publicly accessible
-**Required:** Restrict access to authenticated Teradyne employees
-
-**Steps:**
-1. Navigate to Azure Portal → Static Web Apps → champions-tracker-swa-lca
-2. Go to "Authentication" in left menu
-3. Click "Add provider" → Select "Azure Active Directory"
-4. Configure:
-   - Tenant: Teradyne (eae846e4-996d-4b47-83b9-5f5937d358fe)
-   - Allowed roles: "authenticated"
-   - Redirect URI: Auto-configured by Azure
-5. Update `staticwebapp.config.json` routes:
-   ```json
-   {
-     "routes": [
-       {
-         "route": "/*",
-         "allowedRoles": ["authenticated"]
-       }
-     ],
-     "responseOverrides": {
-       "401": {
-         "redirect": "/.auth/login/aad",
-         "statusCode": 302
-       }
-     }
-   }
-   ```
-6. Test authentication flow
-
-**Documentation:** https://learn.microsoft.com/en-us/azure/static-web-apps/authentication-azure-active-directory
-
-### 2. Custom Domain (Optional)
+### 1. Custom Domain (Optional)
 
 **Current:** mango-forest-0fc04f60f.1.azurestaticapps.net
 **Suggested:** champions.lca-apps.azure
@@ -122,7 +105,7 @@ status: deployed
 3. Configure DNS CNAME record
 4. Validate and enable
 
-### 3. Data Sync Automation (Medium Priority)
+### 2. Data Sync Automation (Medium Priority)
 
 **Current:** Manual JSON file updates
 **Required:** Automated sync from `champions-coverage-tracking.md`
@@ -134,21 +117,20 @@ status: deployed
 - Validate data consistency
 - Run weekly via GitHub Actions or manual trigger
 
-### 4. Cross-App Navigation (Low Priority)
+### 3. Cross-App Navigation
 
-**Integration with ai-adoption-dashboard:**
-1. Add to `05-shared/shared-components/apps-manifest.json`:
-   ```json
-   {
-     "id": "champions-tracker",
-     "name": "Champions Coverage",
-     "url": "https://mango-forest-0fc04f60f.1.azurestaticapps.net",
-     "icon": "🏆",
-     "category": "Enablement"
-   }
-   ```
-2. Include apps-nav-widget.js in `index.html`
-3. Test cross-app navigation
+**Status:** ✅ Partially Complete
+
+**Implemented:**
+- User menu widget integrated (`user-menu.js`)
+- Added to local `apps-manifest.json`
+- User can navigate to other apps from dropdown menu
+- User can access GitHub repo and Azure portal directly
+
+**Remaining:**
+1. Update global `05-shared/shared-components/apps-manifest.json` in Notes workspace
+2. Other apps will then see "Champions Coverage" in their navigation
+3. Verify bidirectional navigation between all apps
 
 ## Monitoring & Maintenance
 
@@ -249,11 +231,12 @@ status: deployed
 - [x] Data loads correctly
 - [x] Responsive design working
 
-**Production Readiness:** ⏳ Pending
-- [ ] Azure AD authentication configured
+**Production Readiness:** ✅ Production Ready
+- [x] Azure AD authentication configured
+- [x] User menu widget integrated
 - [ ] Custom domain configured (optional)
 - [ ] Data sync automation implemented
-- [ ] Cross-app navigation integrated
+- [x] Cross-app navigation integrated (local only)
 
 ## Contact & Support
 
