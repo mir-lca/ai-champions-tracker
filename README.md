@@ -75,7 +75,9 @@ Champions data is sourced from `data/champions-coverage-tracking.md` and synced 
 
 ## Deployment
 
-Deployed to Azure Static Web Apps via GitHub Actions.
+**Live App:** https://mango-forest-0fc04f60f.1.azurestaticapps.net
+
+Deployed to Azure Static Web Apps via GitHub Actions. Auto-deploys on push to `main` branch.
 
 ## Links
 
@@ -85,4 +87,6 @@ Deployed to Azure Static Web Apps via GitHub Actions.
 
 ## Status
 
-**Phase 1**: Foundation & Mockup Conversion - In Progress
+**Deployed:** ✅ Live at https://mango-forest-0fc04f60f.1.azurestaticapps.net
+**Phase 1 & 2:** Complete - Overview, Champions, and Coverage Analysis tabs functional
+**Next:** Azure AD authentication configuration
