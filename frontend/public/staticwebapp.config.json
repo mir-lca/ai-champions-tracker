@@ -1,0 +1,73 @@
+{
+  "routes": [
+    {
+      "route": "/.auth/*",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/assets/*",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/data/*",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/shared-components/*",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/*.css",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/*.js",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/favicon.ico",
+      "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "redirect": "/.auth/login/teradyne",
+      "statusCode": 302
+    }
+  },
+  "auth": {
+    "identityProviders": {
+      "customOpenIdConnectProviders": {
+        "teradyne": {
+          "registration": {
+            "clientIdSettingName": "AAD_CLIENT_ID",
+            "clientCredential": {
+              "clientSecretSettingName": "AAD_CLIENT_SECRET"
+            },
+            "openIdConnectConfiguration": {
+              "wellKnownOpenIdConfiguration": "https://login.microsoftonline.com/eae846e4-996d-4b47-83b9-5f5937d358fe/v2.0/.well-known/openid-configuration"
+            }
+          },
+          "login": {
+            "nameClaimType": "name",
+            "scopes": ["openid", "profile", "email"]
+          }
+        }
+      }
+    }
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/.auth/*",
+      "/assets/*",
+      "/data/*",
+      "/shared-components/*",
+      "/*.{css,js,png,jpg,jpeg,gif,svg,ico,woff,woff2,ttf,eot}"
+    ]
+  }
+}
