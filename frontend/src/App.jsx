@@ -1,16 +1,22 @@
 import { useState } from 'react'
-import orgHierarchyData from './data/orgHierarchy.json'
 import championsDataJson from './data/championsData.json'
 import { getDivisionSummary } from './utils/getDivisionSummary'
 import HierarchicalCoverageTable from './components/champions/HierarchicalCoverageTable'
 import ChampionsTable from './components/champions/ChampionsTable'
 import ChampionCard from './components/champions/ChampionCard'
+import { useOrgHierarchy, isOrgDataStale, formatLastUpdate } from './api/orgDataClient'
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview')
   const [selectedChampion, setSelectedChampion] = useState(null)
-  const [orgHierarchy] = useState(orgHierarchyData)
   const [championsData] = useState(championsDataJson)
+
+  // Fetch org hierarchy from CDN (with fallback to static file)
+  const { data: orgHierarchyData, isLoading: isLoadingOrg, isError: isOrgError } = useOrgHierarchy()
+  const orgHierarchy = orgHierarchyData || {}
+
+  // Check if data is stale (>7 days old)
+  const dataIsStale = isOrgDataStale(orgHierarchy.version)
 
   const divisionSummary = getDivisionSummary(orgHierarchy, championsData)
 
@@ -33,19 +39,75 @@ function App() {
     setSelectedChampion(null)
   }
 
+  // Show loading state while fetching org data
+  if (isLoadingOrg) {
+    return (
+      <div className="container">
+        <div style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
+          <div className="spinner"></div>
+          <p>Loading organizational data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state (though fallback should prevent this)
+  if (isOrgError || !orgHierarchy.totalEmployees) {
+    return (
+      <div className="container">
+        <div style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
+          <p style={{ color: 'var(--color-error)' }}>
+            Failed to load organizational data. Using fallback data.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container">
+      {/* Stale Data Warning */}
+      {dataIsStale && (
+        <div style={{
+          background: 'var(--color-warning-bg, #fff3cd)',
+          border: '1px solid var(--color-warning-border, #ffc107)',
+          color: 'var(--color-warning-text, #856404)',
+          padding: 'var(--space-md)',
+          borderRadius: 'var(--radius-md, 8px)',
+          marginBottom: 'var(--space-lg)'
+        }}>
+          ⚠️ Organizational data is more than 7 days old. Last updated: {formatLastUpdate(orgHierarchy.version)}
+          {orgHierarchy.isFallback && ' (using fallback data)'}
+        </div>
+      )}
+
+      {/* Fallback Data Indicator */}
+      {orgHierarchy.isFallback && !dataIsStale && (
+        <div style={{
+          background: 'var(--color-info-bg, #d1ecf1)',
+          border: '1px solid var(--color-info-border, #17a2b8)',
+          color: 'var(--color-info-text, #0c5460)',
+          padding: 'var(--space-md)',
+          borderRadius: 'var(--radius-md, 8px)',
+          marginBottom: 'var(--space-lg)'
+        }}>
+          ℹ️ Using cached organizational data. CDN temporarily unavailable.
+        </div>
+      )}
+
       <header>
         <h1>AI Champions Coverage Tracker</h1>
         <p className="subtitle">
           Organizational coverage across Teradyne's {orgHierarchy.totalEmployees.toLocaleString()} employees
         </p>
         <p className="last-updated">
-          Last updated: {new Date(championsData.metadata.lastUpdated).toLocaleDateString('en-US', {
+          Champions data: {new Date(championsData.metadata.lastUpdated).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
           })}
+          {' • '}
+          Org data: {orgHierarchy.version ? formatLastUpdate(orgHierarchy.version) : 'Unknown'}
         </p>
       </header>
 
