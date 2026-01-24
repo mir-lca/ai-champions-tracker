@@ -12,10 +12,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * CDN endpoint for organizational hierarchy data
- * Served by Azure Front Door with 5-minute cache TTL
+ * Blob storage endpoint for organizational hierarchy data
+ * Public blob storage with CORS enabled
  */
-const ORG_DATA_CDN_URL = 'https://orgdata-lca-bdcscyfrfjd8fdgh.a01.azurefd.net/organizational-data/org-hierarchy.json';
+const ORG_DATA_CDN_URL = 'https://orgdatastoragelca.blob.core.windows.net/organizational-data/org-hierarchy.json';
 
 /**
  * Fallback to static file if CDN fetch fails
