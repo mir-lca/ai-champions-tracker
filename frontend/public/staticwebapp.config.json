@@ -6,7 +6,10 @@
     },
     {
       "route": "/assets/*",
-      "allowedRoles": ["anonymous", "authenticated"]
+      "allowedRoles": ["anonymous", "authenticated"],
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
     },
     {
       "route": "/data/*",
@@ -14,7 +17,10 @@
     },
     {
       "route": "/shared-components/*",
-      "allowedRoles": ["anonymous", "authenticated"]
+      "allowedRoles": ["anonymous", "authenticated"],
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
     },
     {
       "route": "/*.css",
@@ -22,7 +28,10 @@
     },
     {
       "route": "/*.js",
-      "allowedRoles": ["anonymous", "authenticated"]
+      "allowedRoles": ["anonymous", "authenticated"],
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
     },
     {
       "route": "/favicon.ico",
@@ -33,6 +42,11 @@
       "allowedRoles": ["authenticated"]
     }
   ],
+  "mimeTypes": {
+    ".js": "application/javascript",
+    ".json": "application/json",
+    ".css": "text/css"
+  },
   "responseOverrides": {
     "401": {
       "redirect": "/.auth/login/teradyne",
