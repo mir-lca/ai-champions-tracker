@@ -30,12 +30,12 @@
       "id": "champion-003",
       "name": "Martin Nordentoft",
       "email": "martin.nordentoft@teradyne-robotics.com",
-      "division": "Corporate",
+      "division": "Robotics",
       "focusArea": "IT",
-      "headcountCovered": 139,
+      "headcountCovered": 13,
       "status": "confirmed",
       "appointmentDate": "2026-01-21",
-      "notes": "Covers corporate IT function (139 employees, 100% coverage)."
+      "notes": "Covers Robotics IT division-level function (13 employees, estimated from corporate IT proportionally)."
     },
     {
       "id": "champion-004",
@@ -51,11 +51,11 @@
   "metadata": {
     "lastUpdated": "2026-01-25",
     "note": "totalOrg and coveragePercentage are now calculated dynamically from live CDN data. headcountCovered values updated to match actual org hierarchy function headcounts (100% of assigned function).",
-    "totalCoveredByConfirmedChampions": 314,
+    "totalCoveredByConfirmedChampions": 188,
     "coverageBreakdown": {
       "stephen-hlotyak": "97 (Semiconductor Test > Compute Test > Engineering - Software)",
-      "jacob-pilegaard": "78 (Robotics > UR+MiR > Engineering - Software)",
-      "martin-nordentoft": "139 (Corporate > IT)"
+      "jacob-pilegaard": "78 (Robotics > Engineering - Software)",
+      "martin-nordentoft": "13 (Robotics > IT, estimated from corporate IT)"
     }
   }
 }

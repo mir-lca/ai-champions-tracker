@@ -100,8 +100,8 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
                 )
               })}
 
-              {/* Business Units */}
-              {division.businessUnits?.map(bu => {
+              {/* Business Units (skip for Robotics - consolidated view) */}
+              {division.name !== 'Robotics' && division.businessUnits?.map(bu => {
                 const buCoveragePercent = bu.headcount > 0
                   ? ((bu.covered / bu.headcount) * 100).toFixed(1)
                   : '0.0'

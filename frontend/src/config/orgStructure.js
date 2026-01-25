@@ -27,7 +27,8 @@ export const CORPORATE_FUNCTIONS = [
 export const DIVISION_FUNCTIONS = [
   'Marketing',
   'Sales',
-  'Product Management'
+  'Product Management',
+  'IT'  // Added for corporate-plus-divisional tracking (e.g., Robotics IT)
 ];
 
 /**

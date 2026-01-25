@@ -55,7 +55,20 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         f => f.category === funcName
       );
 
-      const headcount = funcData?.headcount || 0;
+      let headcount = funcData?.headcount || 0;
+
+      // Special handling for corporate-plus-divisional functions (like IT)
+      // If not in division.functions, estimate from corporate function proportionally
+      if (headcount === 0 && funcName === 'IT') {
+        const corporateIT = orgHierarchy.summary?.corporate?.find(
+          cf => cf.category === 'IT'
+        );
+        if (corporateIT) {
+          const divisionProportion = division.headcount / orgHierarchy.totalEmployees;
+          headcount = Math.round(corporateIT.headcount * divisionProportion);
+        }
+      }
+
       const covered = champion?.headcountCovered || 0;
 
       // Compute coverage indicator
