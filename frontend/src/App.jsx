@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import championsDataJson from './data/championsData.json'
 import { getDivisionSummary } from './utils/getDivisionSummary'
+import { enhanceWithCoverage } from './utils/computeCoverage'
 import HierarchicalCoverageTable from './components/champions/HierarchicalCoverageTable'
 import ChampionsTable from './components/champions/ChampionsTable'
 import ChampionCard from './components/champions/ChampionCard'
@@ -11,9 +12,14 @@ function App() {
   const [selectedChampion, setSelectedChampion] = useState(null)
   const [championsData] = useState(championsDataJson)
 
-  // Fetch org hierarchy from CDN (with fallback to static file)
+  // Fetch org hierarchy from CDN
   const { data: orgHierarchyData, isLoading: isLoadingOrg, isError: isOrgError } = useOrgHierarchy()
   const orgHierarchy = orgHierarchyData || {}
+
+  // Enhance org hierarchy with coverage data (app-specific)
+  const enhancedOrgHierarchy = orgHierarchy.summary
+    ? enhanceWithCoverage(orgHierarchy, championsData)
+    : orgHierarchy
 
   // Check if data is stale (>7 days old)
   const dataIsStale = isOrgDataStale(orgHierarchy.version)
@@ -51,13 +57,13 @@ function App() {
     )
   }
 
-  // Show error state (though fallback should prevent this)
+  // Show error state if CDN fetch fails
   if (isOrgError || !orgHierarchy.totalEmployees) {
     return (
       <div className="container">
         <div style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
           <p style={{ color: 'var(--color-error)' }}>
-            Failed to load organizational data. Using fallback data.
+            Failed to load organizational data from CDN. Please try again later.
           </p>
         </div>
       </div>
@@ -77,21 +83,6 @@ function App() {
           marginBottom: 'var(--space-lg)'
         }}>
           ⚠️ Organizational data is more than 7 days old. Last updated: {formatLastUpdate(orgHierarchy.version)}
-          {orgHierarchy.isFallback && ' (using fallback data)'}
-        </div>
-      )}
-
-      {/* Fallback Data Indicator */}
-      {orgHierarchy.isFallback && !dataIsStale && (
-        <div style={{
-          background: 'var(--color-info-bg, #d1ecf1)',
-          border: '1px solid var(--color-info-border, #17a2b8)',
-          color: 'var(--color-info-text, #0c5460)',
-          padding: 'var(--space-md)',
-          borderRadius: 'var(--radius-md, 8px)',
-          marginBottom: 'var(--space-lg)'
-        }}>
-          ℹ️ Using cached organizational data. CDN temporarily unavailable.
         </div>
       )}
 
@@ -252,7 +243,7 @@ function App() {
         </div>
         <div style={{ marginTop: 'var(--space-md)' }}>
           <HierarchicalCoverageTable
-            orgHierarchy={orgHierarchy}
+            orgHierarchy={enhancedOrgHierarchy}
             championsData={championsData}
           />
         </div>

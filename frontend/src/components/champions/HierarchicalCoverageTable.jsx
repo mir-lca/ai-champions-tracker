@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getChampionForFunction } from '../../utils/getChampionForFunction'
+import { getChampionForFunction } from '../../utils/computeCoverage'
 
 function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
   const [expandedDivisions, setExpandedDivisions] = useState({})
