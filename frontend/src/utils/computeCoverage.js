@@ -45,10 +45,31 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
 
     // Get division-level functions that should be tracked
     const divisionFunctions = DIVISION_FUNCTIONS.map(funcName => {
-      const hasChampion = divisionChampions.some(
+      // Find champion for this function
+      const champion = divisionChampions.find(
         c => c.focusArea === funcName
       );
-      return hasChampion ? `${funcName} (✅)` : `${funcName} (❌)`;
+
+      // Find function data from org hierarchy
+      const funcData = division.functions?.find(
+        f => f.category === funcName
+      );
+
+      const headcount = funcData?.headcount || 0;
+      const covered = champion?.headcountCovered || 0;
+
+      // Compute coverage indicator
+      const coverage = covered > 0
+        ? (covered >= headcount ? 'full' : 'partial')
+        : 'gap';
+
+      return {
+        name: funcName,
+        headcount,
+        covered,
+        coverage,
+        hasChampion: !!champion
+      };
     });
 
     // Enhance business units
@@ -66,10 +87,37 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
 
       // Get BU-level functions that should be tracked
       const buFunctions = BU_FUNCTIONS.map(funcName => {
-        const hasChampion = buChampions.some(
+        // Find champion for this function
+        const champion = buChampions.find(
           c => c.focusArea === funcName
         );
-        return hasChampion ? `${funcName} (✅)` : `${funcName} (❌)`;
+
+        // Find function data from division's functions array
+        // (BU functions are tracked within division.functions with same category name)
+        const funcData = division.functions?.find(
+          f => f.category === funcName
+        );
+
+        // For BU-level, we estimate headcount proportionally
+        // (actual BU function headcount not broken down in current data)
+        const divisionFuncHeadcount = funcData?.headcount || 0;
+        const buProportion = bu.headcount / division.headcount;
+        const headcount = Math.round(divisionFuncHeadcount * buProportion);
+
+        const covered = champion?.headcountCovered || 0;
+
+        // Compute coverage indicator
+        const coverage = covered > 0
+          ? (covered >= headcount ? 'full' : 'partial')
+          : 'gap';
+
+        return {
+          name: funcName,
+          headcount,
+          covered,
+          coverage,
+          hasChampion: !!champion
+        };
       });
 
       // Compute coverage indicator for BU
@@ -144,22 +192,19 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
 /**
  * Get champion for a specific function, division, and BU
  *
- * @param {string} functionName - Function name (may include coverage indicator)
+ * @param {string} functionName - Function name (clean, no indicators)
  * @param {string} divisionName - Division name
  * @param {string} businessUnitId - Business unit ID (or null for division-level)
  * @param {Object} championsData - Champions data
  * @returns {Object|null} Champion object or null if not found
  */
 export function getChampionForFunction(functionName, divisionName, businessUnitId, championsData) {
-  // Clean function name (remove coverage indicators)
-  const cleanName = functionName.replace(/\s*\([✅⏳❌]\)\s*/g, '').trim();
-
   const champions = championsData.champions || [];
 
   // Find champion matching function, division, and BU
   return champions.find(c => {
     // Check function match
-    if (c.focusArea !== cleanName) return false;
+    if (c.focusArea !== functionName) return false;
 
     // Check division match
     if (c.division !== divisionName) return false;

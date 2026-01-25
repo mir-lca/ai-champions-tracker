@@ -11,15 +11,10 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
     }))
   }
 
-  const getCoverageIndicator = (functionName) => {
-    if (functionName.includes('✅')) return { text: 'Full', class: 'coverage-full' }
-    if (functionName.includes('⏳')) return { text: 'Partial', class: 'coverage-partial' }
-    if (functionName.includes('❌')) return { text: 'Gap', class: 'coverage-gap' }
+  const getCoverageIndicator = (coverage) => {
+    if (coverage === 'full') return { text: 'Full', class: 'coverage-full' }
+    if (coverage === 'partial') return { text: 'Partial', class: 'coverage-partial' }
     return { text: 'Gap', class: 'coverage-gap' }
-  }
-
-  const cleanFunctionName = (name) => {
-    return name.replace(/\s*\([✅⏳❌]\)\s*/g, '').trim()
   }
 
   // Calculate totals
@@ -74,18 +69,21 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
             <div className={`division-children ${isExpanded ? 'expanded' : ''}`}>
               {/* Division-level Functions */}
               {division.divisionFunctions?.map((func, idx) => {
-                const indicator = getCoverageIndicator(func)
-                const champion = getChampionForFunction(func, division.name, null, championsData)
+                const indicator = getCoverageIndicator(func.coverage)
+                const champion = getChampionForFunction(func.name, division.name, null, championsData)
+                const coveragePercent = func.headcount > 0
+                  ? ((func.covered / func.headcount) * 100).toFixed(1)
+                  : '0.0'
 
                 return (
                   <div key={`div-func-${idx}`} className="heatmap-row">
-                    <div className="heatmap-cell indent-1">{cleanFunctionName(func)}</div>
-                    <div className="heatmap-cell text-right">-</div>
-                    <div className="heatmap-cell text-right">-</div>
-                    <div className="heatmap-cell text-right">-</div>
+                    <div className="heatmap-cell indent-1">{func.name}</div>
+                    <div className="heatmap-cell text-right">{func.headcount.toLocaleString()}</div>
+                    <div className="heatmap-cell text-right">{func.covered.toLocaleString()}</div>
+                    <div className="heatmap-cell text-right">{coveragePercent}%</div>
                     <div className="heatmap-cell">
                       <span className={`coverage-indicator ${indicator.class}`}>
-                        {func.includes('✅') ? '✅' : func.includes('⏳') ? '⏳' : '❌'} {indicator.text}
+                        {func.hasChampion ? '✅' : '❌'} {indicator.text}
                       </span>
                     </div>
                     <div className="heatmap-cell">
@@ -128,18 +126,21 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
 
                     {/* BU Functions */}
                     {bu.functions?.map((func, idx) => {
-                      const indicator = getCoverageIndicator(func)
-                      const champion = getChampionForFunction(func, division.name, bu.id, championsData)
+                      const indicator = getCoverageIndicator(func.coverage)
+                      const champion = getChampionForFunction(func.name, division.name, bu.id, championsData)
+                      const coveragePercent = func.headcount > 0
+                        ? ((func.covered / func.headcount) * 100).toFixed(1)
+                        : '0.0'
 
                       return (
                         <div key={`bu-func-${idx}`} className="heatmap-row">
-                          <div className="heatmap-cell indent-2">{cleanFunctionName(func)}</div>
-                          <div className="heatmap-cell text-right">-</div>
-                          <div className="heatmap-cell text-right">-</div>
-                          <div className="heatmap-cell text-right">-</div>
+                          <div className="heatmap-cell indent-2">{func.name}</div>
+                          <div className="heatmap-cell text-right">{func.headcount.toLocaleString()}</div>
+                          <div className="heatmap-cell text-right">{func.covered.toLocaleString()}</div>
+                          <div className="heatmap-cell text-right">{coveragePercent}%</div>
                           <div className="heatmap-cell">
                             <span className={`coverage-indicator ${indicator.class}`}>
-                              {func.includes('✅') ? '✅' : func.includes('⏳') ? '⏳' : '❌'} {indicator.text}
+                              {func.hasChampion ? '✅' : '❌'} {indicator.text}
                             </span>
                           </div>
                           <div className="heatmap-cell">
