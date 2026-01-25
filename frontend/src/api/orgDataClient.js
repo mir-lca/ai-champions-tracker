@@ -12,15 +12,16 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * Azure Front Door CDN endpoint for organizational hierarchy data
- * CDN with 5-minute cache, backed by Azure Blob Storage
+ * Azure Blob Storage endpoint for organizational hierarchy data
  *
- * For local development, use blob storage URL directly (has CORS configured for localhost)
- * For production, use Front Door URL
+ * Using blob storage directly (instead of Front Door CDN) because:
+ * - Blob storage has CORS properly configured for Static Web Apps
+ * - Front Door CORS rules not propagating headers correctly
+ * - Blob storage still has CDN caching (5-minute cache-control header)
+ *
+ * TODO: Switch to Front Door URL once CORS configuration is working
  */
-const ORG_DATA_CDN_URL = import.meta.env.DEV
-  ? 'https://orgdatastoragelca.blob.core.windows.net/organizational-data/org-hierarchy.json'
-  : 'https://orgdata-lca-bdcscyfrfjd8fdgh.a01.azurefd.net/organizational-data/org-hierarchy.json';
+const ORG_DATA_CDN_URL = 'https://orgdatastoragelca.blob.core.windows.net/organizational-data/org-hierarchy.json';
 
 /**
  * React Query hook for fetching organizational hierarchy
