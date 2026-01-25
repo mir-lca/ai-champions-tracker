@@ -44,7 +44,7 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
     );
 
     // Get division-level functions that should be tracked
-    const divisionFunctions = DIVISION_FUNCTIONS.map(funcName => {
+    let divisionFunctions = DIVISION_FUNCTIONS.map(funcName => {
       // Find champion for this function
       const champion = divisionChampions.find(
         c => c.focusArea === funcName
@@ -84,6 +84,41 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         hasChampion: !!champion
       };
     });
+
+    // For Robotics division: add BU-level functions at division level (consolidated view)
+    // Since we're hiding BUs for Robotics, show BU functions at division level
+    if (division.name === 'Robotics') {
+      const buFunctionsForRobotics = BU_FUNCTIONS.map(funcName => {
+        // Find all champions for this function in Robotics (across all BUs)
+        const champions = divisionChampions.filter(
+          c => c.focusArea === funcName
+        );
+
+        // Find function data from org hierarchy
+        const funcData = division.functions?.find(
+          f => f.category === funcName
+        );
+
+        const headcount = funcData?.headcount || 0;
+        const covered = champions.reduce((sum, c) => sum + (c.headcountCovered || 0), 0);
+
+        // Compute coverage indicator
+        const coverage = covered > 0
+          ? (covered >= headcount ? 'full' : 'partial')
+          : 'gap';
+
+        return {
+          name: funcName,
+          headcount,
+          covered,
+          coverage,
+          hasChampion: champions.length > 0
+        };
+      });
+
+      // Add BU functions to division functions for Robotics
+      divisionFunctions = [...divisionFunctions, ...buFunctionsForRobotics];
+    }
 
     // Enhance business units
     const enhancedBusinessUnits = (division.businessUnits || []).map(bu => {
