@@ -165,41 +165,50 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
       })}
 
       {/* Corporate Functions */}
-      {orgHierarchy.corporate?.map(corp => (
-        <div key={corp.id}>
-          {/* Corporate Row */}
-          <div className="heatmap-row">
-            <div className="heatmap-cell">
-              <strong>{corp.name}</strong>
-            </div>
-            <div className="heatmap-cell text-right">{corp.headcount.toLocaleString()}</div>
-            <div className="heatmap-cell text-right">{corp.covered.toLocaleString()}</div>
-            <div className="heatmap-cell text-right">
-              {corp.headcount > 0 ? ((corp.covered / corp.headcount) * 100).toFixed(1) : '0.0'}%
-            </div>
-            <div className="heatmap-cell">
-              <span className={`coverage-indicator coverage-${corp.coverage}`}>
-                {corp.coverage === 'full' ? '✅ Full' : corp.coverage === 'partial' ? '⏳ Partial' : '❌ Gap'}
-              </span>
-            </div>
-            <div className="heatmap-cell">-</div>
-          </div>
+      {orgHierarchy.corporate?.map(corp => {
+        // Find corporate champion for this function
+        const corpChampion = championsData.champions.find(
+          c => c.focusArea === corp.name && c.division === 'Corporate' && c.status === 'confirmed'
+        )
 
-          {/* Corporate Sub-functions */}
-          {corp.subFunctions?.map((subFunc, idx) => (
-            <div key={`corp-subfunc-${idx}`} className="heatmap-row">
-              <div className="heatmap-cell indent-1">{subFunc}</div>
-              <div className="heatmap-cell text-right">-</div>
-              <div className="heatmap-cell text-right">-</div>
-              <div className="heatmap-cell text-right">-</div>
+        return (
+          <div key={corp.id}>
+            {/* Corporate Row */}
+            <div className="heatmap-row">
               <div className="heatmap-cell">
-                <span className="coverage-indicator coverage-gap">❌ Gap</span>
+                <strong>{corp.name}</strong>
               </div>
-              <div className="heatmap-cell">-</div>
+              <div className="heatmap-cell text-right">{corp.headcount.toLocaleString()}</div>
+              <div className="heatmap-cell text-right">{corp.covered.toLocaleString()}</div>
+              <div className="heatmap-cell text-right">
+                {corp.headcount > 0 ? ((corp.covered / corp.headcount) * 100).toFixed(1) : '0.0'}%
+              </div>
+              <div className="heatmap-cell">
+                <span className={`coverage-indicator coverage-${corp.coverage}`}>
+                  {corp.coverage === 'full' ? '✅ Full' : corp.coverage === 'partial' ? '⏳ Partial' : '❌ Gap'}
+                </span>
+              </div>
+              <div className="heatmap-cell">
+                {corpChampion ? corpChampion.name : '-'}
+              </div>
             </div>
-          ))}
-        </div>
-      ))}
+
+            {/* Corporate Sub-functions */}
+            {corp.subFunctions?.map((subFunc, idx) => (
+              <div key={`corp-subfunc-${idx}`} className="heatmap-row">
+                <div className="heatmap-cell indent-1">{subFunc}</div>
+                <div className="heatmap-cell text-right">-</div>
+                <div className="heatmap-cell text-right">-</div>
+                <div className="heatmap-cell text-right">-</div>
+                <div className="heatmap-cell">
+                  <span className="coverage-indicator coverage-gap">❌ Gap</span>
+                </div>
+                <div className="heatmap-cell">-</div>
+              </div>
+            ))}
+          </div>
+        )
+      })}
 
       {/* Totals Row */}
       <div className="heatmap-row totals-row">

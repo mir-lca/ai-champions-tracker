@@ -149,9 +149,9 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
 
   // Enhance corporate functions
   const enhancedCorporate = CORPORATE_FUNCTIONS.map(funcName => {
-    // Get corporate champions for this function
+    // Get corporate champions for this function (division must be 'Corporate')
     const corpChampions = confirmedChampions.filter(
-      c => c.focusArea === funcName
+      c => c.focusArea === funcName && c.division === 'Corporate'
     );
 
     // Compute covered headcount
