@@ -30,12 +30,23 @@ function App() {
   const pendingChampions = championsData.champions.filter(c => c.status === 'pending').length
   const totalChampions = confirmedChampions + pendingChampions
 
-  const coveragePercentage = championsData.metadata.coveragePercentage
-  const potentialCoverage = (
-    (championsData.metadata.totalCovered +
-      championsData.champions.filter(c => c.status === 'pending').reduce((sum, c) => sum + c.headcountCovered, 0)) /
-    championsData.metadata.totalOrg * 100
-  ).toFixed(1)
+  // Calculate coverage using live org data from CDN
+  const totalOrgEmployees = orgHierarchy.totalEmployees || 0
+  const totalCoveredEmployees = championsData.champions
+    .filter(c => c.status === 'confirmed')
+    .reduce((sum, c) => sum + c.headcountCovered, 0)
+
+  const coveragePercentage = totalOrgEmployees > 0
+    ? ((totalCoveredEmployees / totalOrgEmployees) * 100).toFixed(1)
+    : '0.0'
+
+  const potentialCoverage = totalOrgEmployees > 0
+    ? (
+      (totalCoveredEmployees +
+        championsData.champions.filter(c => c.status === 'pending').reduce((sum, c) => sum + c.headcountCovered, 0)) /
+      totalOrgEmployees * 100
+    ).toFixed(1)
+    : '0.0'
 
   const handleChampionClick = (champion) => {
     setSelectedChampion(champion)
@@ -148,7 +159,7 @@ function App() {
             <div className="metric-label">Organizational Coverage</div>
             <div className="metric-value">{coveragePercentage}%</div>
             <div className="metric-subtext">
-              {championsData.metadata.totalCovered.toLocaleString()} of {championsData.metadata.totalOrg.toLocaleString()} employees
+              {totalCoveredEmployees.toLocaleString()} of {totalOrgEmployees.toLocaleString()} employees
             </div>
           </div>
           <div className="metric-card">

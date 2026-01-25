@@ -49,8 +49,7 @@
   ],
   "metadata": {
     "lastUpdated": "2026-01-25",
-    "totalOrg": 2841,
-    "totalCovered": 569,
-    "coveragePercentage": 20.0
+    "note": "totalOrg and coveragePercentage are now calculated dynamically from live CDN data",
+    "totalCoveredByConfirmedChampions": 569
   }
 }
