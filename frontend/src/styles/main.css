@@ -277,8 +277,8 @@ tr.clickable {
 }
 
 .status-unassigned {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--gap);
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
 }
 
 .status-proposed {
@@ -497,8 +497,8 @@ select:focus {
 }
 
 .coverage-gap {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--gap);
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
 }
 
 .totals-row {

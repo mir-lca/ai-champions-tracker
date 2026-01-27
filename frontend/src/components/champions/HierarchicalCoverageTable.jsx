@@ -59,7 +59,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
               <div className="heatmap-cell text-right">{coveragePercent}%</div>
               <div className="heatmap-cell">
                 <span className={`coverage-indicator coverage-${division.coverage}`}>
-                  {division.coverage === 'full' ? '✅ Full' : division.coverage === 'partial' ? '⏳ Partial' : '❌ Gap'}
+                  {division.coverage === 'full' ? '✅ Full' : division.coverage === 'partial' ? '⏳ Partial' : '○ Gap'}
                 </span>
               </div>
               <div className="heatmap-cell">-</div>
@@ -83,7 +83,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
                     <div className="heatmap-cell text-right">{coveragePercent}%</div>
                     <div className="heatmap-cell">
                       <span className={`coverage-indicator ${indicator.class}`}>
-                        {func.hasChampion ? '✅' : '❌'} {indicator.text}
+                        {func.hasChampion ? '✅' : '○'} {indicator.text}
                       </span>
                     </div>
                     <div className="heatmap-cell">
@@ -118,7 +118,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
                       <div className="heatmap-cell text-right">{buCoveragePercent}%</div>
                       <div className="heatmap-cell">
                         <span className={`coverage-indicator coverage-${bu.coverage}`}>
-                          {bu.coverage === 'full' ? '✅ Full' : bu.coverage === 'partial' ? '⏳ Partial' : '❌ Gap'}
+                          {bu.coverage === 'full' ? '✅ Full' : bu.coverage === 'partial' ? '⏳ Partial' : '○ Gap'}
                         </span>
                       </div>
                       <div className="heatmap-cell">-</div>
@@ -140,7 +140,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
                           <div className="heatmap-cell text-right">{coveragePercent}%</div>
                           <div className="heatmap-cell">
                             <span className={`coverage-indicator ${indicator.class}`}>
-                              {func.hasChampion ? '✅' : '❌'} {indicator.text}
+                              {func.hasChampion ? '✅' : '○'} {indicator.text}
                             </span>
                           </div>
                           <div className="heatmap-cell">
@@ -185,7 +185,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
               </div>
               <div className="heatmap-cell">
                 <span className={`coverage-indicator coverage-${corp.coverage}`}>
-                  {corp.coverage === 'full' ? '✅ Full' : corp.coverage === 'partial' ? '⏳ Partial' : '❌ Gap'}
+                  {corp.coverage === 'full' ? '✅ Full' : corp.coverage === 'partial' ? '⏳ Partial' : '○ Gap'}
                 </span>
               </div>
               <div className="heatmap-cell">
@@ -201,7 +201,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
                 <div className="heatmap-cell text-right">-</div>
                 <div className="heatmap-cell text-right">-</div>
                 <div className="heatmap-cell">
-                  <span className="coverage-indicator coverage-gap">❌ Gap</span>
+                  <span className="coverage-indicator coverage-gap">○ Gap</span>
                 </div>
                 <div className="heatmap-cell">-</div>
               </div>
@@ -241,7 +241,7 @@ function HierarchicalCoverageTable({ orgHierarchy, championsData }) {
           <span style={{ color: 'var(--muted)' }}>- Some functions covered</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)' }}>
-          <span className="coverage-indicator coverage-gap">❌ Gap</span>
+          <span className="coverage-indicator coverage-gap">○ Gap</span>
           <span style={{ color: 'var(--muted)' }}>- No coverage</span>
         </div>
       </div>

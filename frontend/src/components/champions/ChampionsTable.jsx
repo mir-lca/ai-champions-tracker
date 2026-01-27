@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react'
 
 function ChampionsTable({ championsData, onChampionClick }) {
   const [divisionFilter, setDivisionFilter] = useState('all')
-  const [statusFilters, setStatusFilters] = useState(['confirmed', 'pending', 'unassigned']) // Multi-select
+  const [statusFilters, setStatusFilters] = useState(['confirmed', 'pending', 'unassigned'])
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
   const [sortField, setSortField] = useState('name')
   const [sortDirection, setSortDirection] = useState('asc')
 
@@ -71,6 +72,12 @@ function ChampionsTable({ championsData, onChampionClick }) {
     })
   }
 
+  const getStatusLabel = () => {
+    if (statusFilters.length === 0) return 'None selected'
+    if (statusFilters.length === 3) return 'All'
+    return statusFilters.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')
+  }
+
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -110,33 +117,99 @@ function ChampionsTable({ championsData, onChampionClick }) {
           </select>
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">Status (multi-select):</label>
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={statusFilters.includes('confirmed')}
-                onChange={() => handleStatusFilterToggle('confirmed')}
-              />
-              <span>Confirmed</span>
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={statusFilters.includes('pending')}
-                onChange={() => handleStatusFilterToggle('pending')}
-              />
-              <span>Pending</span>
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={statusFilters.includes('unassigned')}
-                onChange={() => handleStatusFilterToggle('unassigned')}
-              />
-              <span>Unassigned</span>
-            </label>
+        <div className="filter-group" style={{ position: 'relative' }}>
+          <label className="filter-label" htmlFor="status-filter">Status:</label>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <button
+              id="status-filter"
+              onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+              onBlur={() => setTimeout(() => setStatusDropdownOpen(false), 200)}
+              style={{
+                padding: '8px 32px 8px 12px',
+                border: '1px solid var(--border)',
+                borderRadius: '4px',
+                background: 'white',
+                cursor: 'pointer',
+                minWidth: '200px',
+                textAlign: 'left',
+                position: 'relative'
+              }}
+            >
+              {getStatusLabel()}
+              <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)' }}>
+                {statusDropdownOpen ? '▲' : '▼'}
+              </span>
+            </button>
+            {statusDropdownOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: '4px',
+                  background: 'white',
+                  border: '1px solid var(--border)',
+                  borderRadius: '4px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  zIndex: 1000,
+                  minWidth: '200px'
+                }}
+              >
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid var(--border)'
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={statusFilters.includes('confirmed')}
+                    onChange={() => handleStatusFilterToggle('confirmed')}
+                  />
+                  <span>Confirmed</span>
+                </label>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid var(--border)'
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={statusFilters.includes('pending')}
+                    onChange={() => handleStatusFilterToggle('pending')}
+                  />
+                  <span>Pending</span>
+                </label>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    cursor: 'pointer'
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={statusFilters.includes('unassigned')}
+                    onChange={() => handleStatusFilterToggle('unassigned')}
+                  />
+                  <span>Unassigned</span>
+                </label>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -185,7 +258,7 @@ function ChampionsTable({ championsData, onChampionClick }) {
                     <span className={`status-badge status-${champion.status}`}>
                       {champion.status === 'confirmed' ? '✅ Confirmed'
                         : champion.status === 'pending' ? '⏳ Pending'
-                        : '❌ Unassigned'}
+                        : '○ Unassigned'}
                     </span>
                   </td>
                 </tr>
