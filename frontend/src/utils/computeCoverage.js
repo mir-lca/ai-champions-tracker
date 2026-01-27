@@ -298,6 +298,94 @@ export function getChampionForFunction(functionName, divisionName, businessUnitI
 }
 
 /**
+ * Generate unassigned champion entries for functions without champions
+ *
+ * @param {Object} enhancedOrgHierarchy - Enhanced org hierarchy with coverage data
+ * @param {Object} championsData - Existing champions data
+ * @returns {Array} Array of unassigned champion objects
+ */
+export function generateUnassignedChampions(enhancedOrgHierarchy, championsData) {
+  const unassigned = [];
+  const champions = championsData.champions || [];
+
+  // Helper to check if a function has a champion
+  const hasChampion = (division, focusArea, businessUnitId = null) => {
+    return champions.some(c => {
+      if (c.division !== division || c.focusArea !== focusArea) return false;
+
+      if (businessUnitId) {
+        return c.businessUnits && c.businessUnits.includes(businessUnitId);
+      } else {
+        return !c.businessUnits || c.businessUnits.length === 0;
+      }
+    });
+  };
+
+  // Check corporate functions
+  if (enhancedOrgHierarchy.corporate) {
+    enhancedOrgHierarchy.corporate.forEach(corp => {
+      if (!hasChampion('Corporate', corp.name)) {
+        unassigned.push({
+          id: `unassigned-corporate-${corp.name.toLowerCase().replace(/\s+/g, '-')}`,
+          name: 'Unassigned',
+          division: 'Corporate',
+          focusArea: corp.name,
+          businessUnits: null,
+          headcountCovered: corp.headcount,
+          status: 'unassigned'
+        });
+      }
+    });
+  }
+
+  // Check divisions
+  if (enhancedOrgHierarchy.divisions) {
+    enhancedOrgHierarchy.divisions.forEach(division => {
+      // Check division-level functions
+      if (division.divisionFunctions) {
+        division.divisionFunctions.forEach(func => {
+          if (!hasChampion(division.name, func.name)) {
+            unassigned.push({
+              id: `unassigned-${division.id}-${func.name.toLowerCase().replace(/\s+/g, '-')}`,
+              name: 'Unassigned',
+              division: division.name,
+              focusArea: func.name,
+              businessUnits: null,
+              headcountCovered: func.headcount,
+              status: 'unassigned'
+            });
+          }
+        });
+      }
+
+      // Check BU-level functions (skip for Robotics as BU functions shown at division level)
+      if (division.name !== 'Robotics' && division.businessUnits) {
+        division.businessUnits.forEach(bu => {
+          if (bu.functions) {
+            bu.functions.forEach(func => {
+              if (!hasChampion(division.name, func.name, bu.id)) {
+                unassigned.push({
+                  id: `unassigned-${bu.id}-${func.name.toLowerCase().replace(/\s+/g, '-')}`,
+                  name: 'Unassigned',
+                  division: division.name,
+                  businessUnit: bu.name,
+                  focusArea: func.name,
+                  businessUnits: [bu.id],
+                  headcountCovered: func.headcount,
+                  status: 'unassigned'
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  return unassigned;
+}
+
+/**
  * Get headcount covered by a champion (dynamically calculated from org hierarchy)
  *
  * @param {Object} champion - Champion object with division, focusArea, businessUnits

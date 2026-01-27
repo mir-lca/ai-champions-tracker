@@ -276,6 +276,11 @@ tr.clickable {
   color: var(--pending);
 }
 
+.status-unassigned {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--gap);
+}
+
 .status-proposed {
   background: rgba(59, 130, 246, 0.1);
   color: var(--proposed);

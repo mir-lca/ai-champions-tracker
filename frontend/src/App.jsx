@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import championsDataJson from './data/championsData.json'
 import { getDivisionSummary } from './utils/getDivisionSummary'
-import { enhanceWithCoverage, getChampionHeadcount } from './utils/computeCoverage'
+import { enhanceWithCoverage, getChampionHeadcount, generateUnassignedChampions } from './utils/computeCoverage'
 import HierarchicalCoverageTable from './components/champions/HierarchicalCoverageTable'
 import ChampionsTable from './components/champions/ChampionsTable'
 import ChampionCard from './components/champions/ChampionCard'
@@ -26,12 +26,19 @@ function App() {
 
   const divisionSummary = getDivisionSummary(enhancedOrgHierarchy, championsData)
 
-  // Enhance champions with computed headcount for display components
+  // Enhance champions with computed headcount and add unassigned champions
   const enhancedChampions = useMemo(() => {
-    return championsData.champions.map(champion => ({
+    // Enhance existing champions with computed headcount
+    const existingChampions = championsData.champions.map(champion => ({
       ...champion,
       headcountCovered: getChampionHeadcount(champion, enhancedOrgHierarchy)
     }));
+
+    // Generate unassigned champions for functions without coverage
+    const unassignedChampions = generateUnassignedChampions(enhancedOrgHierarchy, championsData);
+
+    // Combine: existing champions first, then unassigned
+    return [...existingChampions, ...unassignedChampions];
   }, [championsData.champions, enhancedOrgHierarchy]);
 
   const enhancedChampionsData = {

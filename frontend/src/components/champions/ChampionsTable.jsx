@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 
 function ChampionsTable({ championsData, onChampionClick }) {
   const [divisionFilter, setDivisionFilter] = useState('all')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [statusFilters, setStatusFilters] = useState(['confirmed', 'pending', 'unassigned']) // Multi-select
   const [sortField, setSortField] = useState('name')
   const [sortDirection, setSortDirection] = useState('asc')
 
@@ -21,9 +21,9 @@ function ChampionsTable({ championsData, onChampionClick }) {
       filtered = filtered.filter(c => c.division === divisionFilter)
     }
 
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(c => c.status === statusFilter)
+    // Apply status filters (multi-select)
+    if (statusFilters.length > 0) {
+      filtered = filtered.filter(c => statusFilters.includes(c.status))
     }
 
     // Sort
@@ -59,7 +59,17 @@ function ChampionsTable({ championsData, onChampionClick }) {
     })
 
     return filtered
-  }, [championsData.champions, divisionFilter, statusFilter, sortField, sortDirection])
+  }, [championsData.champions, divisionFilter, statusFilters, sortField, sortDirection])
+
+  const handleStatusFilterToggle = (status) => {
+    setStatusFilters(prev => {
+      if (prev.includes(status)) {
+        return prev.filter(s => s !== status)
+      } else {
+        return [...prev, status]
+      }
+    })
+  }
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -101,16 +111,33 @@ function ChampionsTable({ championsData, onChampionClick }) {
         </div>
 
         <div className="filter-group">
-          <label className="filter-label" htmlFor="status-filter">Status:</label>
-          <select
-            id="status-filter"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="pending">Pending</option>
-          </select>
+          <label className="filter-label">Status (multi-select):</label>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={statusFilters.includes('confirmed')}
+                onChange={() => handleStatusFilterToggle('confirmed')}
+              />
+              <span>Confirmed</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={statusFilters.includes('pending')}
+                onChange={() => handleStatusFilterToggle('pending')}
+              />
+              <span>Pending</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={statusFilters.includes('unassigned')}
+                onChange={() => handleStatusFilterToggle('unassigned')}
+              />
+              <span>Unassigned</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -141,23 +168,29 @@ function ChampionsTable({ championsData, onChampionClick }) {
               </td>
             </tr>
           ) : (
-            filteredChampions.map((champion) => (
-              <tr
-                key={champion.id}
-                className="clickable"
-                onClick={() => onChampionClick(champion)}
-              >
-                <td>{champion.name}</td>
-                <td>{champion.division}</td>
-                <td>{champion.focusArea}</td>
-                <td className="text-right">{champion.headcountCovered.toLocaleString()}</td>
-                <td>
-                  <span className={`status-badge status-${champion.status}`}>
-                    {champion.status === 'confirmed' ? '✅ Confirmed' : '⏳ Pending'}
-                  </span>
-                </td>
-              </tr>
-            ))
+            filteredChampions.map((champion) => {
+              const isUnassigned = champion.status === 'unassigned';
+              return (
+                <tr
+                  key={champion.id}
+                  className={isUnassigned ? '' : 'clickable'}
+                  onClick={isUnassigned ? undefined : () => onChampionClick(champion)}
+                  style={isUnassigned ? { cursor: 'default' } : {}}
+                >
+                  <td>{champion.name}</td>
+                  <td>{champion.division}</td>
+                  <td>{champion.focusArea}</td>
+                  <td className="text-right">{champion.headcountCovered.toLocaleString()}</td>
+                  <td>
+                    <span className={`status-badge status-${champion.status}`}>
+                      {champion.status === 'confirmed' ? '✅ Confirmed'
+                        : champion.status === 'pending' ? '⏳ Pending'
+                        : '❌ Unassigned'}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>
