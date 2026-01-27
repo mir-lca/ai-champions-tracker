@@ -268,3 +268,41 @@ export function getChampionForFunction(functionName, divisionName, businessUnitI
     return true;
   }) || null;
 }
+
+/**
+ * Get headcount covered by a champion (dynamically calculated from org hierarchy)
+ *
+ * @param {Object} champion - Champion object with division, focusArea, businessUnits
+ * @param {Object} enhancedOrgHierarchy - Enhanced org hierarchy with coverage data
+ * @returns {number} Headcount covered (100% of assigned function's headcount)
+ */
+export function getChampionHeadcount(champion, enhancedOrgHierarchy) {
+  if (!champion || !enhancedOrgHierarchy.divisions) {
+    return 0;
+  }
+
+  // Find the division
+  const division = enhancedOrgHierarchy.divisions.find(d => d.name === champion.division);
+  if (!division) {
+    // Check if it's a corporate champion
+    if (champion.division === 'Corporate' && enhancedOrgHierarchy.corporate) {
+      const corpFunc = enhancedOrgHierarchy.corporate.find(cf => cf.name === champion.focusArea);
+      return corpFunc?.headcount || 0;
+    }
+    return 0;
+  }
+
+  // Check if it's a BU-level or division-level champion
+  if (champion.businessUnits && champion.businessUnits.length > 0) {
+    // BU-level champion - find the BU function
+    const bu = division.businessUnits?.find(b => champion.businessUnits.includes(b.id));
+    if (!bu) return 0;
+
+    const buFunc = bu.functions?.find(f => f.name === champion.focusArea);
+    return buFunc?.headcount || 0;
+  } else {
+    // Division-level champion - find the division function
+    const divFunc = division.divisionFunctions?.find(f => f.name === champion.focusArea);
+    return divFunc?.headcount || 0;
+  }
+}

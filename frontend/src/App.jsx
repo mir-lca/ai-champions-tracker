@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import championsDataJson from './data/championsData.json'
 import { getDivisionSummary } from './utils/getDivisionSummary'
-import { enhanceWithCoverage } from './utils/computeCoverage'
+import { enhanceWithCoverage, getChampionHeadcount } from './utils/computeCoverage'
 import HierarchicalCoverageTable from './components/champions/HierarchicalCoverageTable'
 import ChampionsTable from './components/champions/ChampionsTable'
 import ChampionCard from './components/champions/ChampionCard'
@@ -24,7 +24,20 @@ function App() {
   // Check if data is stale (>7 days old)
   const dataIsStale = isOrgDataStale(orgHierarchy.version)
 
-  const divisionSummary = getDivisionSummary(orgHierarchy, championsData)
+  const divisionSummary = getDivisionSummary(enhancedOrgHierarchy, championsData)
+
+  // Enhance champions with computed headcount for display components
+  const enhancedChampions = useMemo(() => {
+    return championsData.champions.map(champion => ({
+      ...champion,
+      headcountCovered: getChampionHeadcount(champion, enhancedOrgHierarchy)
+    }));
+  }, [championsData.champions, enhancedOrgHierarchy]);
+
+  const enhancedChampionsData = {
+    ...championsData,
+    champions: enhancedChampions
+  };
 
   const confirmedChampions = championsData.champions.filter(c => c.status === 'confirmed').length
   const pendingChampions = championsData.champions.filter(c => c.status === 'pending').length
@@ -72,6 +85,7 @@ function App() {
     : '0.0'
 
   const handleChampionClick = (champion) => {
+    // Champion already has computed headcount from enhancedChampionsData
     setSelectedChampion(champion)
   }
 
@@ -259,7 +273,7 @@ function App() {
           />
         ) : (
           <ChampionsTable
-            championsData={championsData}
+            championsData={enhancedChampionsData}
             onChampionClick={handleChampionClick}
           />
         )}
