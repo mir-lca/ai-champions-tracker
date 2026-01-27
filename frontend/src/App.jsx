@@ -59,25 +59,11 @@ function App() {
     : '0.0'
 
   // Calculate potential coverage (including pending champions)
-  // For each pending champion, look up their assigned function's headcount
+  // Use getChampionHeadcount helper for consistency
   const pendingCoverage = championsData.champions
     .filter(c => c.status === 'pending')
     .reduce((sum, champion) => {
-      // Find the function this champion would cover
-      const division = enhancedOrgHierarchy.divisions?.find(d => d.name === champion.division);
-      if (!division) return sum;
-
-      // Check if it's a division-level or BU-level function
-      if (champion.businessUnits && champion.businessUnits.length > 0) {
-        // BU-level champion - find the BU function
-        const bu = division.businessUnits?.find(b => champion.businessUnits.includes(b.id));
-        const buFunc = bu?.functions?.find(f => f.name === champion.focusArea);
-        return sum + (buFunc?.headcount || 0);
-      } else {
-        // Division-level champion - find the division function
-        const divFunc = division.divisionFunctions?.find(f => f.name === champion.focusArea);
-        return sum + (divFunc?.headcount || 0);
-      }
+      return sum + getChampionHeadcount(champion, enhancedOrgHierarchy);
     }, 0);
 
   const potentialCoverage = totalOrgEmployees > 0

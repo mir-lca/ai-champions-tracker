@@ -149,7 +149,7 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
       divisionFunctions = [...divisionFunctions, ...buFunctionsForRobotics];
     }
 
-    // Calculate total division coverage from all division functions
+    // Calculate division-level function coverage (will add BU coverage later)
     covered = divisionFunctions.reduce((sum, func) => sum + func.covered, 0);
 
     // Enhance business units
@@ -208,6 +208,11 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         functions: buFunctions
       };
     });
+
+    // Add BU coverage to division coverage (unless Robotics, which already includes BU functions in divisionFunctions)
+    if (division.name !== 'Robotics') {
+      covered += enhancedBusinessUnits.reduce((sum, bu) => sum + bu.covered, 0);
+    }
 
     // Compute coverage indicator for division
     const coverage = covered > 0
