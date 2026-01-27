@@ -128,7 +128,8 @@ function ChampionsTable({ championsData, onChampionClick }) {
                 padding: '8px 32px 8px 12px',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
-                background: 'white',
+                background: 'var(--card-background)',
+                color: 'var(--text)',
                 cursor: 'pointer',
                 minWidth: '200px',
                 textAlign: 'left',
@@ -147,10 +148,10 @@ function ChampionsTable({ championsData, onChampionClick }) {
                   top: '100%',
                   left: 0,
                   marginTop: '4px',
-                  background: 'white',
+                  background: 'var(--card-background)',
                   border: '1px solid var(--border)',
                   borderRadius: '4px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   zIndex: 1000,
                   minWidth: '200px'
                 }}
@@ -162,7 +163,8 @@ function ChampionsTable({ championsData, onChampionClick }) {
                     gap: '8px',
                     padding: '8px 12px',
                     cursor: 'pointer',
-                    borderBottom: '1px solid var(--border)'
+                    borderBottom: '1px solid var(--border)',
+                    color: 'var(--text)'
                   }}
                   onMouseDown={(e) => e.preventDefault()}
                 >
@@ -180,7 +182,8 @@ function ChampionsTable({ championsData, onChampionClick }) {
                     gap: '8px',
                     padding: '8px 12px',
                     cursor: 'pointer',
-                    borderBottom: '1px solid var(--border)'
+                    borderBottom: '1px solid var(--border)',
+                    color: 'var(--text)'
                   }}
                   onMouseDown={(e) => e.preventDefault()}
                 >
@@ -197,7 +200,8 @@ function ChampionsTable({ championsData, onChampionClick }) {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '8px 12px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    color: 'var(--text)'
                   }}
                   onMouseDown={(e) => e.preventDefault()}
                 >
