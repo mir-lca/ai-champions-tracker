@@ -16,6 +16,34 @@ import {
 } from '../config/orgStructure';
 
 /**
+ * Compute actual per-BU function headcounts from employee-level data
+ *
+ * @param {Object} orgHierarchy - Org hierarchy with employees array
+ * @param {string} divisionName - Division name
+ * @param {string} businessUnitId - Business unit ID
+ * @returns {Object} Map of functionCategory -> headcount
+ */
+function computeBUFunctionCounts(orgHierarchy, divisionName, businessUnitId) {
+  if (!orgHierarchy.employees) {
+    return {};
+  }
+
+  const functionCounts = {};
+
+  // Count employees by function for this specific BU
+  orgHierarchy.employees.forEach(emp => {
+    if (emp.division === divisionName &&
+        emp.businessUnitId === businessUnitId &&
+        emp.functionCategory) {
+      const func = emp.functionCategory;
+      functionCounts[func] = (functionCounts[func] || 0) + 1;
+    }
+  });
+
+  return functionCounts;
+}
+
+/**
  * Enhance org hierarchy with coverage data from champions
  *
  * @param {Object} orgHierarchy - Org hierarchy from CDN (enhanced structure)
@@ -93,12 +121,13 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
           c => c.focusArea === funcName
         );
 
-        // Find function data from org hierarchy
-        const funcData = division.functions?.find(
-          f => f.category === funcName
-        );
+        // Get actual headcount by summing across all Robotics BUs
+        let headcount = 0;
+        (division.businessUnits || []).forEach(bu => {
+          const buFunctionCounts = computeBUFunctionCounts(orgHierarchy, division.name, bu.id);
+          headcount += buFunctionCounts[funcName] || 0;
+        });
 
-        const headcount = funcData?.headcount || 0;
         // Champions cover 100% of function headcount if assigned
         const funcCovered = champions.length > 0 ? headcount : 0;
 
@@ -134,6 +163,9 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
       // This will be calculated after processing BU functions below
       let buCovered = 0;
 
+      // Compute actual per-BU function counts from employee data
+      const buFunctionCounts = computeBUFunctionCounts(orgHierarchy, division.name, bu.id);
+
       // Get BU-level functions that should be tracked
       const buFunctions = BU_FUNCTIONS.map(funcName => {
         // Find champion for this function
@@ -141,17 +173,8 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
           c => c.focusArea === funcName
         );
 
-        // Find function data from division's functions array
-        // (BU functions are tracked within division.functions with same category name)
-        const funcData = division.functions?.find(
-          f => f.category === funcName
-        );
-
-        // For BU-level, we estimate headcount proportionally
-        // (actual BU function headcount not broken down in current data)
-        const divisionFuncHeadcount = funcData?.headcount || 0;
-        const buProportion = bu.headcount / division.headcount;
-        const headcount = Math.round(divisionFuncHeadcount * buProportion);
+        // Get actual headcount from employee data
+        const headcount = buFunctionCounts[funcName] || 0;
 
         // Champion covers 100% of function headcount if assigned
         const funcCovered = champion ? headcount : 0;
@@ -294,12 +317,20 @@ export function getChampionHeadcount(champion, enhancedOrgHierarchy) {
 
   // Check if it's a BU-level or division-level champion
   if (champion.businessUnits && champion.businessUnits.length > 0) {
-    // BU-level champion - find the BU function
-    const bu = division.businessUnits?.find(b => champion.businessUnits.includes(b.id));
-    if (!bu) return 0;
+    // BU-level champion - sum across all assigned BUs
+    let totalHeadcount = 0;
 
-    const buFunc = bu.functions?.find(f => f.name === champion.focusArea);
-    return buFunc?.headcount || 0;
+    for (const buId of champion.businessUnits) {
+      // Compute actual function counts for this BU
+      const buFunctionCounts = computeBUFunctionCounts(
+        enhancedOrgHierarchy,
+        champion.division,
+        buId
+      );
+      totalHeadcount += buFunctionCounts[champion.focusArea] || 0;
+    }
+
+    return totalHeadcount;
   } else {
     // Division-level champion - find the division function
     const divFunc = division.divisionFunctions?.find(f => f.name === champion.focusArea);
