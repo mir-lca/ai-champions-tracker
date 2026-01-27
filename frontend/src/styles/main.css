@@ -49,19 +49,20 @@ body {
   padding: 0;
 }
 
-/* App Header (Unified Top Bar) */
+/* App Header - Fixed height unified top bar (Shared across all dashboard apps) */
 
 .app-header {
+  height: 56px;
   background: var(--background);
   border-bottom: 1px solid var(--border);
-  padding: var(--space-sm) var(--space-lg);
+  padding: 0 var(--space-lg);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   position: sticky;
   top: 0;
   z-index: 100;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .header-left-section {
@@ -75,64 +76,63 @@ body {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--foreground);
+  white-space: nowrap;
 }
 
 .header-metadata {
   display: inline-block;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--muted);
-  padding: 3px 8px;
+  padding: 4px 8px;
   background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
-}
-
-.header-metadata:hover {
-  border-color: var(--subtle);
+  white-space: nowrap;
 }
 
 .header-center {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  align-items: stretch;
   flex: 1;
   justify-content: center;
+  min-width: 0;
 }
 
-/* Header Tabs (traditional navigation tabs for header) */
+/* Header Tabs - Traditional tab navigation */
 
 .header-tabs {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 0;
-  height: 100%;
+  position: relative;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: -1px;
 }
 
 .header-tab {
   position: relative;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 0 var(--space-xl);
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   color: var(--muted);
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
-  height: 100%;
   display: flex;
   align-items: center;
+  margin-bottom: -2px;
 }
 
 .header-tab:hover {
   color: var(--foreground);
-  background: rgba(59, 130, 246, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .header-tab-active {
@@ -150,28 +150,35 @@ body {
 
 @media (max-width: 1080px) {
   .app-header {
+    height: auto;
+    min-height: 56px;
     flex-wrap: wrap;
-    align-items: flex-start;
+    padding: var(--space-sm) var(--space-lg);
   }
 
   .header-center {
     width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    order: 3;
+    margin-top: var(--space-sm);
   }
 
   .header-tabs {
     width: 100%;
     overflow-x: auto;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .header-tabs::-webkit-scrollbar {
     display: none;
   }
+
+  .header-tab {
+    padding: var(--space-sm) var(--space-lg);
+  }
 }
 
-/* User Menu */
+/* User Menu - Consistent widget styling (Shared across all dashboard apps) */
 
 .header-actions {
   position: relative;
@@ -185,7 +192,7 @@ body {
   align-items: center;
   gap: 6px;
   height: 32px;
-  padding: 3px 6px;
+  padding: 0 8px;
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -211,8 +218,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   color: #e5e5e5;
   background: linear-gradient(135deg, #1f2937, #111827);
   border: 1px solid #1f2937;
@@ -221,9 +228,8 @@ body {
 }
 
 .user-menu-caret {
-  font-size: 12px;
-  color: #737373;
-  margin-right: 2px;
+  font-size: 10px;
+  color: var(--muted);
 }
 
 .user-menu-dropdown {
@@ -244,11 +250,11 @@ body {
 }
 
 .user-menu-section {
-  padding: 10px 12px;
+  padding: 12px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .user-menu-section:last-child {
@@ -256,29 +262,31 @@ body {
 }
 
 .user-menu-label {
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
   color: var(--muted);
 }
 
 .user-menu-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: #f5f5f5;
+  color: var(--foreground);
 }
 
 .user-menu-email {
   font-size: 12px;
-  color: #a3a3a3;
+  color: var(--muted);
 }
 
 .user-menu-link {
   display: block;
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: var(--radius-sm);
-  color: #e5e5e5;
+  color: var(--foreground);
   text-decoration: none;
+  font-size: 13px;
   transition: background 0.2s ease;
 }
 
@@ -294,8 +302,9 @@ body {
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--background);
-  color: #f5f5f5;
+  color: var(--foreground);
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -306,7 +315,7 @@ body {
 }
 
 .user-menu-muted {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
