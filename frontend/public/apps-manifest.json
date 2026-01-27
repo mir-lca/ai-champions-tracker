@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "apps": [
+    {
+      "id": "ai-champions-tracker",
+      "name": "AI Champions Tracker",
+      "description": "Track AI champion appointments and organizational coverage",
+      "url": "https://app-ai-champions-tracker.azurewebsites.net"
+    },
+    {
+      "id": "org-data-dashboard",
+      "name": "Org Data Dashboard",
+      "description": "Organizational data analysis and reporting across divisions, functions, and locations",
+      "url": "https://app-org-data-dashboard.azurewebsites.net"
+    },
+    {
+      "id": "ai-adoption-dashboard",
+      "name": "Cursor adoption by manager",
+      "description": "Track AI tool adoption, usage patterns, and engagement across the organization",
+      "url": "https://kind-dune-0e5b20a0f.4.azurestaticapps.net"
+    },
+    {
+      "id": "wiki",
+      "name": "Knowledge wiki",
+      "description": "Distilled insights and frameworks from all work",
+      "url": "https://app-knowledge-wiki.azurewebsites.net"
+    },
+    {
+      "id": "floorplan",
+      "name": "Meeting room finder",
+      "description": "Find meeting rooms at Robotics HQ in Denmark",
+      "url": "https://black-smoke-0ec4b8003.3.azurestaticapps.net"
+    },
+    {
+      "id": "ai-tool-evaluator",
+      "name": "AI tool evaluator",
+      "description": "Evaluate and compare AI tools and capabilities",
+      "url": "https://app-ai-tool-evaluator.azurewebsites.net"
+    }
+  ]
+}

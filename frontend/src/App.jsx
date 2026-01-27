@@ -6,11 +6,21 @@ import HierarchicalCoverageTable from './components/champions/HierarchicalCovera
 import ChampionsTable from './components/champions/ChampionsTable'
 import ChampionCard from './components/champions/ChampionCard'
 import { useOrgHierarchy, isOrgDataStale, formatLastUpdate } from './api/orgDataClient'
+import { useAuth } from './api/useAuth'
+import AppHeader from './components/reused/AppHeader'
+import HeaderTabs from './components/reused/HeaderTabs'
+
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'champions', label: 'Champions' },
+  { id: 'coverage', label: 'Coverage Analysis' }
+];
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview')
   const [selectedChampion, setSelectedChampion] = useState(null)
   const [championsData] = useState(championsDataJson)
+  const { user } = useAuth()
 
   // Fetch org hierarchy from CDN
   const { data: orgHierarchyData, isLoading: isLoadingOrg, isError: isOrgError } = useOrgHierarchy()
@@ -77,6 +87,11 @@ function App() {
     ? (((totalCoveredEmployees + pendingCoverage) / totalOrgEmployees) * 100).toFixed(1)
     : '0.0'
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId)
+    setSelectedChampion(null)
+  }
+
   const handleChampionClick = (champion) => {
     // Champion already has computed headcount from enhancedChampionsData
     setSelectedChampion(champion)
@@ -111,8 +126,39 @@ function App() {
     )
   }
 
+  const repoUrl = 'https://github.com/mir-lca/ai-champions-tracker';
+  const subscriptionId = 'fbc14e76-650e-4485-b7a7-ed52038aee03';
+  const resourceGroup = 'cursor-adoption-rg';
+  const azureResources = [
+    {
+      label: 'Static Web App',
+      href: `https://portal.azure.com/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Web/staticSites/ai-champions-tracker-swa-lca`
+    }
+  ];
+
+  const lastUpdatedText = `Champions: ${new Date(championsData.metadata.lastUpdated).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })} • Org: ${orgHierarchy.version ? formatLastUpdate(orgHierarchy.version) : 'Unknown'}`;
+
   return (
     <div className="container">
+      <AppHeader
+        title="AI Champions Coverage Tracker"
+        metadata={lastUpdatedText}
+        user={user}
+        repoUrl={repoUrl}
+        azureResources={azureResources}
+        currentAppId="ai-champions-tracker"
+      >
+        <HeaderTabs
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+      </AppHeader>
+
       {/* Stale Data Warning */}
       {dataIsStale && (
         <div style={{
@@ -121,58 +167,11 @@ function App() {
           color: 'var(--color-warning-text, #856404)',
           padding: 'var(--space-md)',
           borderRadius: 'var(--radius-md, 8px)',
-          marginBottom: 'var(--space-lg)'
+          margin: 'var(--space-lg)'
         }}>
           ⚠️ Organizational data is more than 7 days old. Last updated: {formatLastUpdate(orgHierarchy.version)}
         </div>
       )}
-
-      <header>
-        <h1>AI Champions Coverage Tracker</h1>
-        <p className="subtitle">
-          Organizational coverage across Teradyne's {orgHierarchy.totalEmployees.toLocaleString()} employees
-        </p>
-        <p className="last-updated">
-          Champions data: {new Date(championsData.metadata.lastUpdated).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-          {' • '}
-          Org data: {orgHierarchy.version ? formatLastUpdate(orgHierarchy.version) : 'Unknown'}
-        </p>
-      </header>
-
-      {/* Tabs */}
-      <div className="tabs">
-        <button
-          className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab('overview')
-            setSelectedChampion(null)
-          }}
-        >
-          Overview
-        </button>
-        <button
-          className={`tab ${activeTab === 'champions' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab('champions')
-            setSelectedChampion(null)
-          }}
-        >
-          Champions
-        </button>
-        <button
-          className={`tab ${activeTab === 'coverage' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab('coverage')
-            setSelectedChampion(null)
-          }}
-        >
-          Coverage Analysis
-        </button>
-      </div>
 
       {/* Overview Tab */}
       <div className={`tab-content ${activeTab === 'overview' ? 'active' : ''}`}>
