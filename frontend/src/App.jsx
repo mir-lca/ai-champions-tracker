@@ -32,20 +32,43 @@ function App() {
 
   // Calculate coverage using live org data from CDN
   const totalOrgEmployees = orgHierarchy.totalEmployees || 0
-  const totalCoveredEmployees = championsData.champions
-    .filter(c => c.status === 'confirmed')
-    .reduce((sum, c) => sum + c.headcountCovered, 0)
+
+  // Calculate confirmed coverage from enhanced org hierarchy
+  const totalCoveredEmployees = enhancedOrgHierarchy.divisions
+    ? (
+      enhancedOrgHierarchy.divisions.reduce((sum, div) => sum + div.covered, 0) +
+      (enhancedOrgHierarchy.corporate?.reduce((sum, corp) => sum + corp.covered, 0) || 0)
+    )
+    : 0
 
   const coveragePercentage = totalOrgEmployees > 0
     ? ((totalCoveredEmployees / totalOrgEmployees) * 100).toFixed(1)
     : '0.0'
 
+  // Calculate potential coverage (including pending champions)
+  // For each pending champion, look up their assigned function's headcount
+  const pendingCoverage = championsData.champions
+    .filter(c => c.status === 'pending')
+    .reduce((sum, champion) => {
+      // Find the function this champion would cover
+      const division = enhancedOrgHierarchy.divisions?.find(d => d.name === champion.division);
+      if (!division) return sum;
+
+      // Check if it's a division-level or BU-level function
+      if (champion.businessUnits && champion.businessUnits.length > 0) {
+        // BU-level champion - find the BU function
+        const bu = division.businessUnits?.find(b => champion.businessUnits.includes(b.id));
+        const buFunc = bu?.functions?.find(f => f.name === champion.focusArea);
+        return sum + (buFunc?.headcount || 0);
+      } else {
+        // Division-level champion - find the division function
+        const divFunc = division.divisionFunctions?.find(f => f.name === champion.focusArea);
+        return sum + (divFunc?.headcount || 0);
+      }
+    }, 0);
+
   const potentialCoverage = totalOrgEmployees > 0
-    ? (
-      (totalCoveredEmployees +
-        championsData.champions.filter(c => c.status === 'pending').reduce((sum, c) => sum + c.headcountCovered, 0)) /
-      totalOrgEmployees * 100
-    ).toFixed(1)
+    ? (((totalCoveredEmployees + pendingCoverage) / totalOrgEmployees) * 100).toFixed(1)
     : '0.0'
 
   const handleChampionClick = (champion) => {

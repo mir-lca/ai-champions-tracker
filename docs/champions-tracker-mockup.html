@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Champions Coverage Tracker - Mockup</title>
+  <style>
+    /* Design System - Hybrid Approach (Minimal Layout + Colorful Visualizations) */
+    :root {
+      /* Colors - Dark Theme */
+      --background: #0b0b0b;
+      --foreground: #f5f5f5;
+      --muted: #a3a3a3;
+      --border: #2a2a2a;
+      --card-bg: #121212;
+      --hover-bg: #1a1a1a;
+
+      /* Status Colors */
+      --confirmed: #22c55e;
+      --pending: #fbbf24;
+      --proposed: #3b82f6;
+      --gap: #ef4444;
+
+      /* Spacing */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .last-updated {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: var(--space-sm);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: var(--space-md);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-xl);
+    }
+
+    .tab {
+      padding: var(--space-md) var(--space-lg);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--foreground);
+    }
+
+    .tab.active {
+      color: var(--foreground);
+      border-bottom-color: var(--confirmed);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Cards */
+    .metric-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-sm);
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .metric-subtext {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* Coverage Gauge */
+    .gauge-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    .gauge {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: var(--space-lg) auto;
+    }
+
+    .gauge-circle {
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 20;
+    }
+
+    .gauge-progress {
+      fill: none;
+      stroke: var(--confirmed);
+      stroke-width: 20;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .gauge-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .gauge-percentage {
+      font-size: 48px;
+      font-weight: 700;
+    }
+
+    .gauge-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* Table */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: var(--space-lg);
+    }
+
+    .table-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .table-description {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: var(--space-md) var(--space-lg);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    th.text-right {
+      text-align: right;
+    }
+
+    td {
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    td.text-right {
+      text-align: right;
+    }
+
+    tr:hover td {
+      background: var(--hover-bg);
+    }
+
+    tr.clickable {
+      cursor: pointer;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-confirmed {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--confirmed);
+    }
+
+    .status-pending {
+      background: rgba(251, 191, 36, 0.1);
+      color: var(--pending);
+    }
+
+    .status-proposed {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--proposed);
+    }
+
+    /* Heatmap */
+    .heatmap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      overflow-x: auto;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 150px repeat(7, 100px);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      min-width: 900px;
+    }
+
+    .heatmap-cell {
+      background: var(--card-bg);
+      padding: var(--space-md);
+      text-align: center;
+      font-size: 12px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .heatmap-header {
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--background);
+    }
+
+    .heatmap-cell.covered {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--confirmed);
+      cursor: pointer;
+    }
+
+    .heatmap-cell.pending {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--pending);
+      cursor: pointer;
+    }
+
+    .heatmap-cell.gap {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--gap);
+    }
+
+    .heatmap-cell.na {
+      background: var(--background);
+      color: var(--muted);
+      opacity: 0.3;
+    }
+
+    .heatmap-cell:hover:not(.heatmap-header):not(.na) {
+      opacity: 0.8;
+    }
+
+    /* Detail View */
+    .detail-view {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: var(--space-md);
+    }
+
+    .breadcrumb a {
+      color: var(--confirmed);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .champion-detail {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .detail-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .detail-value {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--card-bg);
+      color: var(--foreground);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--hover-bg);
+      border-color: var(--confirmed);
+    }
+
+    .btn-primary {
+      background: var(--confirmed);
+      border-color: var(--confirmed);
+      color: var(--background);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .filter-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    select {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--foreground);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--confirmed);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: var(--space-md);
+      }
+
+      .metric-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .heatmap-grid {
+        font-size: 10px;
+        grid-template-columns: 100px repeat(7, 80px);
+      }
+
+      .champion-detail {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Org Hierarchy View */
+    .org-hierarchy {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+    }
+
+    .org-level {
+      margin-bottom: var(--space-lg);
+    }
+
+    .org-level-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: var(--space-md);
+      font-weight: 600;
+    }
+
+    .org-boxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .org-box {
+      background: var(--background);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .org-box:hover {
+      border-color: var(--confirmed);
+    }
+
+    .org-box.covered {
+      border-color: var(--confirmed);
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .org-box.partial {
+      border-color: var(--pending);
+      background: rgba(251, 191, 36, 0.05);
+    }
+
+    .org-box.gap {
+      border-color: var(--gap);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .org-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-sm);
+    }
+
+    .org-box-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .org-box-badge {
+      font-size: 18px;
+    }
+
+    .org-box-stats {
+      display: flex;
+      gap: var(--space-md);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .org-box-stat {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .org-box-champion {
+      font-size: 12px;
+      color: var(--confirmed);
+      padding: var(--space-xs) var(--space-sm);
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      margin-top: var(--space-xs);
+    }
+
+    .org-box-children {
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+
+    .org-box-children.expanded {
+      display: block;
+    }
+
+    .org-box-child {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+
+    .org-box-child:last-child {
+      margin-bottom: 0;
+    }
+
+    .expand-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: var(--space-xs);
+      margin-top: var(--space-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .expand-btn:hover {
+      color: var(--foreground);
+    }
+
+    /* Smart Heatmap - Hierarchical */
+    .smart-heatmap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      overflow-x: auto;
+    }
+
+    .heatmap-row {
+      display: grid;
+      grid-template-columns: 250px 100px 100px 80px 120px auto;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 1px;
+      min-height: 50px;
+    }
+
+    .heatmap-row.header {
+      background: var(--background);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .heatmap-row.division {
+      cursor: pointer;
+    }
+
+    .heatmap-row.division:hover {
+      background: var(--hover-bg);
+    }
+
+    .division-children {
+      display: none;
+    }
+
+    .division-children.expanded {
+      display: contents;
+    }
+
+    .expand-icon {
+      display: inline-block;
+      margin-right: 8px;
+      transition: transform 0.2s;
+      font-size: 10px;
+    }
+
+    .expand-icon.expanded {
+      transform: rotate(90deg);
+    }
+
+    .heatmap-cell-smart {
+      background: var(--card-bg);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .heatmap-cell-smart.header {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--background);
+    }
+
+    .heatmap-cell-smart.division {
+      padding-left: var(--space-md);
+      font-weight: 600;
+    }
+
+    .heatmap-cell-smart.bu {
+      padding-left: var(--space-xl);
+      color: var(--muted);
+    }
+
+    .heatmap-cell-smart.function {
+      padding-left: calc(var(--space-xl) * 2);
+      font-size: 12px;
+    }
+
+    .heatmap-cell-smart.covered {
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .heatmap-cell-smart.partial {
+      background: rgba(251, 191, 36, 0.1);
+    }
+
+    .heatmap-cell-smart.gap {
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .coverage-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .coverage-indicator.full {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--confirmed);
+    }
+
+    .coverage-indicator.partial {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--pending);
+    }
+
+    .coverage-indicator.none {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--gap);
+    }
+
+    .scope-badge {
+      font-size: 10px;
+      color: var(--muted);
+      background: var(--background);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .champion-link {
+      color: var(--confirmed);
+      text-decoration: none;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .champion-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>AI Champions Coverage Tracker</h1>
+      <p class="subtitle">Track organizational coverage as division leaders appoint champions</p>
+      <p class="last-updated" id="lastUpdated">Last updated: January 23, 2026</p>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('overview')">Overview</button>
+      <button class="tab" onclick="switchTab('champions')">Champions</button>
+      <button class="tab" onclick="switchTab('heatmap')">Coverage Analysis</button>
+    </div>
+
+    <!-- Overview Tab -->
+    <div id="overview" class="tab-content active">
+      <!-- Metric Cards -->
+      <div class="metric-cards">
+        <div class="metric-card">
+          <div class="metric-label">Total Champions</div>
+          <div class="metric-value" id="totalChampions">4</div>
+          <div class="metric-subtext">3 confirmed + 1 pending</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Coverage</div>
+          <div class="metric-value" id="coverage">7.1%</div>
+          <div class="metric-subtext">569 of 8,000 people</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Potential Coverage</div>
+          <div class="metric-value" id="potentialCoverage">7.7%</div>
+          <div class="metric-subtext">619 if pending confirmed</div>
+        </div>
+      </div>
+
+      <!-- Coverage Gauge -->
+      <div class="gauge-container">
+        <h2 class="table-title">Organizational Coverage</h2>
+        <div class="gauge">
+          <svg viewBox="0 0 200 200" class="gauge-circle">
+            <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+            <circle class="gauge-progress" cx="100" cy="100" r="80" id="gaugeProgress"></circle>
+          </svg>
+          <div class="gauge-text">
+            <div class="gauge-percentage" id="gaugePercentage">7.1%</div>
+            <div class="gauge-label">Coverage</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Division Breakdown -->
+      <div class="table-container">
+        <div class="table-header">
+          <h2 class="table-title">Coverage by Division</h2>
+          <p class="table-description">Champions and coverage across major divisions</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Division</th>
+              <th class="text-right">Champions</th>
+              <th class="text-right">Covered</th>
+              <th class="text-right">Total</th>
+              <th class="text-right">Coverage %</th>
+            </tr>
+          </thead>
+          <tbody id="divisionTableBody">
+            <!-- Populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Champions Tab -->
+    <div id="champions" class="tab-content">
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <span class="filter-label">Division:</span>
+          <select id="divisionFilter" onchange="filterChampions()">
+            <option value="all">All Divisions</option>
+            <option value="CTD">CTD</option>
+            <option value="Robotics">Robotics</option>
+            <option value="Semi">Semi</option>
+            <option value="Industrial">Industrial</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Status:</span>
+          <select id="statusFilter" onchange="filterChampions()">
+            <option value="all">All Status</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Champion Detail View (hidden by default) -->
+      <div id="championDetail" class="detail-view hidden">
+        <div class="breadcrumb">
+          <a onclick="closeChampionDetail()">Champions</a> / <span id="championName"></span>
+        </div>
+        <div class="champion-detail" id="championDetailContent">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Champions Table -->
+      <div class="table-container" id="championsTable">
+        <div class="table-header">
+          <h2 class="table-title">AI Champions Roster</h2>
+          <p class="table-description">Click a champion to view covered employees</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Division</th>
+              <th>Focus Area</th>
+              <th class="text-right">Headcount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="championsTableBody">
+            <!-- Populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Coverage Analysis Tab -->
+    <div id="heatmap" class="tab-content">
+      <div class="smart-heatmap">
+        <h2 class="table-title" style="margin-bottom: var(--space-sm)">Smart Coverage Matrix</h2>
+        <p class="table-description" style="margin-bottom: var(--space-lg)">Hierarchical view showing Division → BU → Function with actual org data</p>
+
+        <!-- Legend -->
+        <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); font-size: 12px;">
+          <div style="display: flex; align-items: center; gap: var(--space-xs);">
+            <span class="coverage-indicator full">✅ Full</span>
+            <span style="color: var(--muted)">Champion assigned</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: var(--space-xs);">
+            <span class="coverage-indicator partial">⏳ Partial</span>
+            <span style="color: var(--muted)">Pending or sub-coverage</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: var(--space-xs);">
+            <span class="coverage-indicator none">❌ Gap</span>
+            <span style="color: var(--muted)">No champion</span>
+          </div>
+        </div>
+
+        <!-- Header Row -->
+        <div class="heatmap-row header">
+          <div class="heatmap-cell-smart header">Organization</div>
+          <div class="heatmap-cell-smart header text-right">Headcount</div>
+          <div class="heatmap-cell-smart header text-right">Covered</div>
+          <div class="heatmap-cell-smart header text-right">Coverage %</div>
+          <div class="heatmap-cell-smart header">Coverage</div>
+          <div class="heatmap-cell-smart header">Champion</div>
+        </div>
+
+        <!-- Data Rows -->
+        <div id="smartHeatmapRows">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data
+    const championsData = [
+      {
+        id: 'champion-001',
+        name: 'Stephen Hlotyak',
+        email: 'stephen.hlotyak@teradyne.com',
+        division: 'CTD',
+        focusArea: 'Software Engineering',
+        timeCommitmentPct: 30,
+        headcountCovered: 405,
+        status: 'confirmed',
+        appointmentDate: '2026-01-21',
+        productLines: ['UltraFlex', 'J750', 'T2000', 'IG-XL'],
+        notes: 'First confirmed champion. Covers all CTD SW engineers across 4 product lines.'
+      },
+      {
+        id: 'champion-002',
+        name: 'Jacob Pilegaard',
+        email: 'japi@universal-robots.com',
+        division: 'Robotics',
+        focusArea: 'Software Engineering',
+        timeCommitmentPct: null,
+        headcountCovered: 143,
+        status: 'confirmed',
+        appointmentDate: null,
+        businessUnits: ['UR', 'MiR'],
+        notes: 'Covers entire Robotics SW organization across UR and MiR.'
+      },
+      {
+        id: 'champion-003',
+        name: 'Martin Nordentoft',
+        email: 'martin.nordentoft@teradyne-robotics.com',
+        division: 'Robotics',
+        focusArea: 'IT',
+        timeCommitmentPct: null,
+        headcountCovered: 21,
+        status: 'confirmed',
+        appointmentDate: null,
+        businessUnits: ['UR', 'MiR'],
+        notes: 'Covers entire Robotics IT organization (direct + indirect reports).'
+      },
+      {
+        id: 'champion-004',
+        name: 'Fleur Nielsen',
+        email: 'flni@universal-robots.com',
+        division: 'Robotics',
+        focusArea: 'Marketing',
+        timeCommitmentPct: null,
+        headcountCovered: 50,
+        status: 'pending',
+        appointmentDate: null,
+        businessUnits: ['UR', 'MiR'],
+        notes: 'Proposed champion. Would cover entire Robotics marketing organization.'
+      }
+    ];
+
+    // Derived division summary from orgHierarchy (computed dynamically)
+    function getDivisionSummary() {
+      const summary = [];
+
+      orgHierarchy.divisions.forEach(div => {
+        const champions = championsData.filter(c =>
+          c.status === 'confirmed' &&
+          (c.division === div.name || (c.division === 'CTD' && div.name === 'Semiconductor Test'))
+        ).length;
+
+        summary.push({
+          division: div.name,
+          champions: champions,
+          covered: div.covered,
+          total: div.headcount,
+          coverage: div.headcount > 0 ? Math.round((div.covered / div.headcount) * 100) : 0
+        });
+      });
+
+      // Add corporate as aggregate
+      const corpTotal = orgHierarchy.corporate.reduce((sum, c) => sum + c.headcount, 0);
+      const corpCovered = orgHierarchy.corporate.reduce((sum, c) => sum + c.covered, 0);
+      summary.push({
+        division: 'Corporate',
+        champions: 0,
+        covered: corpCovered,
+        total: corpTotal,
+        coverage: corpTotal > 0 ? Math.round((corpCovered / corpTotal) * 100) : 0
+      });
+
+      return summary;
+    }
+
+    // Organizational hierarchy data
+    const orgHierarchy = {
+      divisions: [
+        {
+          id: 'product-test',
+          name: 'Product Test',
+          headcount: 1200,
+          covered: 0,
+          coverage: 'gap',
+          businessUnits: []
+        },
+        {
+          id: 'semiconductor-test',
+          name: 'Semiconductor Test',
+          headcount: 2500,
+          covered: 405,
+          coverage: 'partial',
+          businessUnits: [
+            {
+              id: 'memory-test',
+              name: 'Memory Test',
+              headcount: 600,
+              covered: 0,
+              coverage: 'gap',
+              functions: ['Engineering', 'Marketing', 'Applications']
+            },
+            {
+              id: 'power-test',
+              name: 'Power Test',
+              headcount: 500,
+              covered: 0,
+              coverage: 'gap',
+              functions: ['Engineering', 'Marketing']
+            },
+            {
+              id: 'silicon-photonics',
+              name: 'Silicon Photonics Test',
+              headcount: 400,
+              covered: 0,
+              coverage: 'gap',
+              functions: ['Engineering']
+            },
+            {
+              id: 'compute-test',
+              name: 'Compute Test (CTD)',
+              headcount: 1000,
+              covered: 405,
+              coverage: 'partial',
+              champion: 'Stephen Hlotyak',
+              championScope: 'Software Engineering only',
+              functions: ['Engineering - Software (✅)', 'Engineering - Hardware', 'Applications']
+            }
+          ]
+        },
+        {
+          id: 'robotics',
+          name: 'Robotics',
+          headcount: 800,
+          covered: 214,
+          coverage: 'partial',
+          businessUnits: [
+            {
+              id: 'ur',
+              name: 'Universal Robots (UR)',
+              headcount: 500,
+              covered: 120,
+              coverage: 'partial',
+              functions: ['Engineering - Software (✅)', 'Engineering - Hardware', 'Product Management']
+            },
+            {
+              id: 'mir',
+              name: 'Mobile Industrial Robots (MiR)',
+              headcount: 300,
+              covered: 94,
+              coverage: 'partial',
+              functions: ['Engineering - Software (✅)', 'Engineering - Hardware', 'Product Management']
+            }
+          ],
+          divisionFunctions: ['IT (✅)', 'Marketing (⏳)', 'Sales', 'Service']
+        }
+      ],
+      corporate: [
+        {
+          id: 'operations',
+          name: 'Operations',
+          headcount: 1500,
+          covered: 0,
+          coverage: 'gap',
+          subFunctions: ['Supply Chain', 'Manufacturing', 'NPI', 'Operations Management']
+        },
+        {
+          id: 'finance',
+          name: 'Finance',
+          headcount: 400,
+          covered: 0,
+          coverage: 'gap',
+          subFunctions: []
+        },
+        {
+          id: 'hr',
+          name: 'Human Resources',
+          headcount: 200,
+          covered: 0,
+          coverage: 'gap',
+          subFunctions: []
+        },
+        {
+          id: 'legal',
+          name: 'Legal',
+          headcount: 100,
+          covered: 0,
+          coverage: 'gap',
+          subFunctions: []
+        },
+        {
+          id: 'it',
+          name: 'IT & Security',
+          headcount: 300,
+          covered: 21,
+          coverage: 'partial',
+          note: 'Robotics IT covered (21 people). Corporate IT uncovered.',
+          subFunctions: []
+        }
+      ]
+    };
+
+    // Initialize page
+    function init() {
+      updateOverviewMetrics();
+      renderGauge();
+      renderDivisionTable();
+      renderChampionsTable();
+      renderSmartHeatmap();
+    }
+
+    // Update overview metrics from orgHierarchy
+    function updateOverviewMetrics() {
+      const totalHeadcount = orgHierarchy.divisions.reduce((sum, d) => sum + d.headcount, 0) +
+                            orgHierarchy.corporate.reduce((sum, c) => sum + c.headcount, 0);
+      const totalCovered = orgHierarchy.divisions.reduce((sum, d) => sum + d.covered, 0) +
+                          orgHierarchy.corporate.reduce((sum, c) => sum + c.covered, 0);
+      const confirmedCount = championsData.filter(c => c.status === 'confirmed').length;
+      const pendingCount = championsData.filter(c => c.status === 'pending').length;
+      const pendingCovered = championsData.filter(c => c.status === 'pending')
+                                          .reduce((sum, c) => sum + c.headcountCovered, 0);
+
+      const coveragePercent = (totalCovered / totalHeadcount * 100).toFixed(1);
+      const potentialPercent = ((totalCovered + pendingCovered) / totalHeadcount * 100).toFixed(1);
+
+      document.getElementById('totalChampions').textContent = confirmedCount + pendingCount;
+      document.querySelector('#overview .metric-card:nth-child(1) .metric-subtext').textContent =
+        `${confirmedCount} confirmed + ${pendingCount} pending`;
+      document.getElementById('coverage').textContent = `${coveragePercent}%`;
+      document.querySelector('#overview .metric-card:nth-child(2) .metric-subtext').textContent =
+        `${totalCovered} of ${totalHeadcount} people`;
+      document.getElementById('potentialCoverage').textContent = `${potentialPercent}%`;
+      document.querySelector('#overview .metric-card:nth-child(3) .metric-subtext').textContent =
+        `If ${pendingCount} pending confirmed`;
+    }
+
+    // Render coverage gauge
+    function renderGauge() {
+      const totalHeadcount = orgHierarchy.divisions.reduce((sum, d) => sum + d.headcount, 0) +
+                            orgHierarchy.corporate.reduce((sum, c) => sum + c.headcount, 0);
+      const totalCovered = orgHierarchy.divisions.reduce((sum, d) => sum + d.covered, 0) +
+                          orgHierarchy.corporate.reduce((sum, c) => sum + c.covered, 0);
+      const percentage = (totalCovered / totalHeadcount * 100).toFixed(1);
+
+      const circumference = 2 * Math.PI * 80;
+      const offset = circumference - (percentage / 100) * circumference;
+
+      const gaugeProgress = document.getElementById('gaugeProgress');
+      gaugeProgress.style.strokeDasharray = circumference;
+      gaugeProgress.style.strokeDashoffset = offset;
+    }
+
+    // Render division breakdown table
+    function renderDivisionTable() {
+      const tbody = document.getElementById('divisionTableBody');
+      const divisionData = getDivisionSummary();
+
+      tbody.innerHTML = divisionData.map(row => `
+        <tr>
+          <td><strong>${row.division}</strong></td>
+          <td class="text-right">${row.champions}</td>
+          <td class="text-right">${row.covered}</td>
+          <td class="text-right">${row.total}</td>
+          <td class="text-right" style="color: ${row.coverage >= 30 ? 'var(--confirmed)' : row.coverage > 0 ? 'var(--pending)' : 'var(--gap)'}">
+            ${row.coverage}%
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Render champions table
+    function renderChampionsTable() {
+      const tbody = document.getElementById('championsTableBody');
+      const filteredChampions = getFilteredChampions();
+
+      tbody.innerHTML = filteredChampions.map(champion => `
+        <tr class="clickable" onclick="showChampionDetail('${champion.id}')">
+          <td><strong>${champion.name}</strong></td>
+          <td>${champion.division}</td>
+          <td>${champion.focusArea}</td>
+          <td class="text-right">${champion.headcountCovered}</td>
+          <td>
+            <span class="status-badge status-${champion.status}">
+              ${champion.status === 'confirmed' ? '✅ Confirmed' : '⏳ Pending'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Filter champions
+    function getFilteredChampions() {
+      const divisionFilter = document.getElementById('divisionFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      return championsData.filter(champion => {
+        const matchesDivision = divisionFilter === 'all' || champion.division === divisionFilter;
+        const matchesStatus = statusFilter === 'all' || champion.status === statusFilter;
+        return matchesDivision && matchesStatus;
+      });
+    }
+
+    function filterChampions() {
+      renderChampionsTable();
+    }
+
+    // Show champion detail
+    function showChampionDetail(championId) {
+      const champion = championsData.find(c => c.id === championId);
+      if (!champion) return;
+
+      document.getElementById('championsTable').classList.add('hidden');
+      document.getElementById('championDetail').classList.remove('hidden');
+      document.getElementById('championName').textContent = champion.name;
+
+      const detailContent = document.getElementById('championDetailContent');
+      detailContent.innerHTML = `
+        <div class="detail-item">
+          <span class="detail-label">Name</span>
+          <span class="detail-value">${champion.name}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Email</span>
+          <span class="detail-value">${champion.email}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Division</span>
+          <span class="detail-value">${champion.division}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Focus Area</span>
+          <span class="detail-value">${champion.focusArea}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Headcount Covered</span>
+          <span class="detail-value">${champion.headcountCovered} people</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time Commitment</span>
+          <span class="detail-value">${champion.timeCommitmentPct ? champion.timeCommitmentPct + '%' : 'TBD'}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Status</span>
+          <span class="detail-value">
+            <span class="status-badge status-${champion.status}">
+              ${champion.status === 'confirmed' ? '✅ Confirmed' : '⏳ Pending'}
+            </span>
+          </span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Appointment Date</span>
+          <span class="detail-value">${champion.appointmentDate || 'TBD'}</span>
+        </div>
+      `;
+
+      // Add notes section
+      if (champion.notes) {
+        detailContent.innerHTML += `
+          <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">Notes</span>
+            <span class="detail-value">${champion.notes}</span>
+          </div>
+        `;
+      }
+
+      // Add organizational scope
+      if (champion.productLines) {
+        detailContent.innerHTML += `
+          <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">Product Lines</span>
+            <span class="detail-value">${champion.productLines.join(', ')}</span>
+          </div>
+        `;
+      }
+
+      if (champion.businessUnits) {
+        detailContent.innerHTML += `
+          <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">Business Units</span>
+            <span class="detail-value">${champion.businessUnits.join(', ')}</span>
+          </div>
+        `;
+      }
+    }
+
+    function closeChampionDetail() {
+      document.getElementById('championsTable').classList.remove('hidden');
+      document.getElementById('championDetail').classList.add('hidden');
+    }
+
+    // Helper function to find champion for a specific function in a division/BU
+    function getChampionForFunction(functionName, divisionName, buName) {
+      // Match function name patterns to champion focus areas
+      const normalizedFunc = functionName.toLowerCase();
+
+      return championsData.find(champion => {
+        const matchesDivision = champion.division === divisionName ||
+                               (champion.division === 'Robotics' && (buName === 'Universal Robots (UR)' || buName === 'Mobile Industrial Robots (MiR)'));
+
+        if (!matchesDivision) return false;
+
+        const focusArea = champion.focusArea.toLowerCase();
+
+        // Match patterns
+        if (focusArea.includes('software') && normalizedFunc.includes('software')) return true;
+        if (focusArea.includes('it') && normalizedFunc.includes('it')) return true;
+        if (focusArea.includes('marketing') && normalizedFunc.includes('marketing')) return true;
+
+        return false;
+      });
+    }
+
+    // Render Smart Heatmap
+    function renderSmartHeatmap() {
+      const container = document.getElementById('smartHeatmapRows');
+
+      let rowsHtml = '';
+      let totalHeadcount = 0;
+      let totalCovered = 0;
+
+      // Render divisions
+      orgHierarchy.divisions.forEach(division => {
+        const divisionCoverageClass = division.coverage;
+        const divisionCoverageIcon = divisionCoverageClass === 'full' ? '✅ Full' :
+                                      divisionCoverageClass === 'partial' ? '⏳ Partial' : '❌ Gap';
+        const divisionPercentage = division.headcount > 0 ? Math.round((division.covered / division.headcount) * 100) : 0;
+
+        totalHeadcount += division.headcount;
+        totalCovered += division.covered;
+
+        // Division row with expand icon
+        rowsHtml += `
+          <div class="heatmap-row division" onclick="toggleDivision('${division.id}')">
+            <div class="heatmap-cell-smart division">
+              <span class="expand-icon" id="icon-${division.id}">▶</span>${division.name}
+            </div>
+            <div class="heatmap-cell-smart text-right">${division.headcount}</div>
+            <div class="heatmap-cell-smart text-right">${division.covered}</div>
+            <div class="heatmap-cell-smart text-right">${divisionPercentage}%</div>
+            <div class="heatmap-cell-smart">
+              <span class="coverage-indicator ${divisionCoverageClass}">${divisionCoverageIcon}</span>
+            </div>
+            <div class="heatmap-cell-smart">—</div>
+          </div>
+        `;
+
+        // Start children container
+        let childrenHtml = '';
+
+        // Render division-level functions (consolidated across BUs)
+        if (division.divisionFunctions && division.divisionFunctions.length > 0) {
+          division.divisionFunctions.forEach(func => {
+            const isCovered = func.includes('✅');
+            const isPending = func.includes('⏳');
+            const functionCoverageClass = isCovered ? 'full' : isPending ? 'partial' : 'gap';
+            const functionCoverageIcon = isCovered ? '✅ Full' : isPending ? '⏳ Partial' : '❌ Gap';
+            const cleanFunc = func.replace(/\s*\(✅\)|\(⏳\)|\(❌\)/g, '').trim();
+
+            // Find champion for this division-level function
+            const champion = getChampionForFunction(cleanFunc, division.name, null);
+            const championText = champion ? champion.name + (champion.status === 'pending' ? ' (Pending)' : '') : '—';
+
+            childrenHtml += `
+              <div class="heatmap-row function">
+                <div class="heatmap-cell-smart function">${cleanFunc}</div>
+                <div class="heatmap-cell-smart text-right">—</div>
+                <div class="heatmap-cell-smart text-right">—</div>
+                <div class="heatmap-cell-smart text-right">—</div>
+                <div class="heatmap-cell-smart">
+                  <span class="coverage-indicator ${functionCoverageClass}">${functionCoverageIcon}</span>
+                </div>
+                <div class="heatmap-cell-smart">${championText}</div>
+              </div>
+            `;
+          });
+        }
+
+        // Render business units
+        if (division.businessUnits && division.businessUnits.length > 0) {
+          division.businessUnits.forEach(bu => {
+            const buCoverageClass = bu.coverage;
+            const buCoverageIcon = buCoverageClass === 'full' ? '✅ Full' :
+                                   buCoverageClass === 'partial' ? '⏳ Partial' : '❌ Gap';
+            const buPercentage = bu.headcount > 0 ? Math.round((bu.covered / bu.headcount) * 100) : 0;
+
+            childrenHtml += `
+              <div class="heatmap-row bu">
+                <div class="heatmap-cell-smart bu">${bu.name}</div>
+                <div class="heatmap-cell-smart text-right">${bu.headcount}</div>
+                <div class="heatmap-cell-smart text-right">${bu.covered}</div>
+                <div class="heatmap-cell-smart text-right">${buPercentage}%</div>
+                <div class="heatmap-cell-smart">
+                  <span class="coverage-indicator ${buCoverageClass}">${buCoverageIcon}</span>
+                </div>
+                <div class="heatmap-cell-smart">—</div>
+              </div>
+            `;
+
+            // Render functions if available
+            if (bu.functions && bu.functions.length > 0) {
+              bu.functions.forEach(func => {
+                const isCovered = func.includes('✅');
+                const isPending = func.includes('⏳');
+                const functionCoverageClass = isCovered ? 'full' : isPending ? 'partial' : 'gap';
+                const functionCoverageIcon = isCovered ? '✅ Full' : isPending ? '⏳ Partial' : '❌ Gap';
+                const cleanFunc = func.replace(/\s*\(✅\)|\(⏳\)|\(❌\)/g, '').trim();
+
+                // Find champion for this specific function
+                const champion = getChampionForFunction(cleanFunc, division.name, bu.name);
+                const championText = champion ? champion.name + (champion.status === 'pending' ? ' (Pending)' : '') : '—';
+
+                childrenHtml += `
+                  <div class="heatmap-row function">
+                    <div class="heatmap-cell-smart function">${cleanFunc}</div>
+                    <div class="heatmap-cell-smart text-right">—</div>
+                    <div class="heatmap-cell-smart text-right">—</div>
+                    <div class="heatmap-cell-smart text-right">—</div>
+                    <div class="heatmap-cell-smart">
+                      <span class="coverage-indicator ${functionCoverageClass}">${functionCoverageIcon}</span>
+                    </div>
+                    <div class="heatmap-cell-smart">${championText}</div>
+                  </div>
+                `;
+              });
+            }
+          });
+        }
+
+        // Wrap children in container
+        if (childrenHtml) {
+          rowsHtml += `<div class="division-children" id="children-${division.id}">${childrenHtml}</div>`;
+        }
+      });
+
+      // Render corporate functions
+      orgHierarchy.corporate.forEach(corp => {
+        const corpCoverageClass = corp.coverage;
+        const corpCoverageIcon = corpCoverageClass === 'full' ? '✅ Full' :
+                                 corpCoverageClass === 'partial' ? '⏳ Partial' : '❌ Gap';
+        const corpPercentage = corp.headcount > 0 ? Math.round((corp.covered / corp.headcount) * 100) : 0;
+
+        totalHeadcount += corp.headcount;
+        totalCovered += corp.covered;
+
+        const hasSubFunctions = corp.subFunctions && corp.subFunctions.length > 0;
+
+        // Corporate function row with optional expand icon
+        rowsHtml += `
+          <div class="heatmap-row division" ${hasSubFunctions ? `onclick="toggleDivision('${corp.id}')"` : ''}>
+            <div class="heatmap-cell-smart division">
+              ${hasSubFunctions ? `<span class="expand-icon" id="icon-${corp.id}">▶</span>` : ''}${corp.name}
+            </div>
+            <div class="heatmap-cell-smart text-right">${corp.headcount}</div>
+            <div class="heatmap-cell-smart text-right">${corp.covered}</div>
+            <div class="heatmap-cell-smart text-right">${corpPercentage}%</div>
+            <div class="heatmap-cell-smart">
+              <span class="coverage-indicator ${corpCoverageClass}">${corpCoverageIcon}</span>
+            </div>
+            <div class="heatmap-cell-smart">
+              ${corp.note ? corp.note : '—'}
+            </div>
+          </div>
+        `;
+
+        // Render sub-functions if available
+        if (hasSubFunctions) {
+          let corpChildrenHtml = '';
+          corp.subFunctions.forEach(subFunc => {
+            corpChildrenHtml += `
+              <div class="heatmap-row function">
+                <div class="heatmap-cell-smart function">${subFunc}</div>
+                <div class="heatmap-cell-smart text-right">—</div>
+                <div class="heatmap-cell-smart text-right">—</div>
+                <div class="heatmap-cell-smart text-right">—</div>
+                <div class="heatmap-cell-smart">
+                  <span class="coverage-indicator gap">❌ Gap</span>
+                </div>
+                <div class="heatmap-cell-smart">—</div>
+              </div>
+            `;
+          });
+          rowsHtml += `<div class="division-children" id="children-${corp.id}">${corpChildrenHtml}</div>`;
+        }
+      });
+
+      // Add totals row
+      const totalPercentage = totalHeadcount > 0 ? Math.round((totalCovered / totalHeadcount) * 100) : 0;
+      const totalCoverageClass = totalPercentage >= 70 ? 'full' : totalPercentage >= 30 ? 'partial' : 'gap';
+      const totalCoverageIcon = totalPercentage >= 70 ? '✅ Full' : totalPercentage >= 30 ? '⏳ Partial' : '❌ Gap';
+
+      rowsHtml += `
+        <div class="heatmap-row division" style="border-top: 2px solid var(--border); font-weight: 700;">
+          <div class="heatmap-cell-smart division">Total</div>
+          <div class="heatmap-cell-smart text-right">${totalHeadcount}</div>
+          <div class="heatmap-cell-smart text-right">${totalCovered}</div>
+          <div class="heatmap-cell-smart text-right">${totalPercentage}%</div>
+          <div class="heatmap-cell-smart">
+            <span class="coverage-indicator ${totalCoverageClass}">${totalCoverageIcon}</span>
+          </div>
+          <div class="heatmap-cell-smart">${championsData.filter(c => c.status === 'confirmed').length} confirmed</div>
+        </div>
+      `;
+
+      container.innerHTML = rowsHtml;
+    }
+
+    // Toggle division expansion
+    function toggleDivision(divisionId) {
+      const children = document.getElementById(`children-${divisionId}`);
+      const icon = document.getElementById(`icon-${divisionId}`);
+
+      if (children && icon) {
+        children.classList.toggle('expanded');
+        icon.classList.toggle('expanded');
+      }
+    }
+
+    // Tab switching
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+    }
+
+    // Initialize on page load
+    init();
+  </script>
+</body>
+</html>

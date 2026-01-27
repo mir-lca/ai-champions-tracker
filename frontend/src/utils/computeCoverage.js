@@ -37,11 +37,9 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
       c => c.division === division.name
     );
 
-    // Compute covered headcount (sum of champions' covered employees)
-    const covered = divisionChampions.reduce(
-      (sum, c) => sum + (c.headcountCovered || 0),
-      0
-    );
+    // Compute covered headcount (calculated dynamically from assigned functions)
+    // This will be calculated after we process division functions below
+    let covered = 0;
 
     // Get division-level functions that should be tracked
     let divisionFunctions = DIVISION_FUNCTIONS.map(funcName => {
@@ -69,17 +67,18 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         }
       }
 
-      const covered = champion?.headcountCovered || 0;
+      // Champion covers 100% of function headcount if assigned
+      const funcCovered = champion ? headcount : 0;
 
       // Compute coverage indicator
-      const coverage = covered > 0
-        ? (covered >= headcount ? 'full' : 'partial')
+      const coverage = funcCovered > 0
+        ? (funcCovered >= headcount ? 'full' : 'partial')
         : 'gap';
 
       return {
         name: funcName,
         headcount,
-        covered,
+        covered: funcCovered,
         coverage,
         hasChampion: !!champion
       };
@@ -100,17 +99,18 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         );
 
         const headcount = funcData?.headcount || 0;
-        const covered = champions.reduce((sum, c) => sum + (c.headcountCovered || 0), 0);
+        // Champions cover 100% of function headcount if assigned
+        const funcCovered = champions.length > 0 ? headcount : 0;
 
         // Compute coverage indicator
-        const coverage = covered > 0
-          ? (covered >= headcount ? 'full' : 'partial')
+        const coverage = funcCovered > 0
+          ? (funcCovered >= headcount ? 'full' : 'partial')
           : 'gap';
 
         return {
           name: funcName,
           headcount,
-          covered,
+          covered: funcCovered,
           coverage,
           hasChampion: champions.length > 0
         };
@@ -120,6 +120,9 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
       divisionFunctions = [...divisionFunctions, ...buFunctionsForRobotics];
     }
 
+    // Calculate total division coverage from all division functions
+    covered = divisionFunctions.reduce((sum, func) => sum + func.covered, 0);
+
     // Enhance business units
     const enhancedBusinessUnits = (division.businessUnits || []).map(bu => {
       // Get champions for this BU
@@ -127,11 +130,9 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         c => c.businessUnits && c.businessUnits.includes(bu.id)
       );
 
-      // Compute covered headcount for BU
-      const buCovered = buChampions.reduce(
-        (sum, c) => sum + (c.headcountCovered || 0),
-        0
-      );
+      // Compute covered headcount for BU (calculated dynamically from BU functions)
+      // This will be calculated after processing BU functions below
+      let buCovered = 0;
 
       // Get BU-level functions that should be tracked
       const buFunctions = BU_FUNCTIONS.map(funcName => {
@@ -152,21 +153,25 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
         const buProportion = bu.headcount / division.headcount;
         const headcount = Math.round(divisionFuncHeadcount * buProportion);
 
-        const covered = champion?.headcountCovered || 0;
+        // Champion covers 100% of function headcount if assigned
+        const funcCovered = champion ? headcount : 0;
 
         // Compute coverage indicator
-        const coverage = covered > 0
-          ? (covered >= headcount ? 'full' : 'partial')
+        const coverage = funcCovered > 0
+          ? (funcCovered >= headcount ? 'full' : 'partial')
           : 'gap';
 
         return {
           name: funcName,
           headcount,
-          covered,
+          covered: funcCovered,
           coverage,
           hasChampion: !!champion
         };
       });
+
+      // Calculate BU covered from all BU functions
+      buCovered = buFunctions.reduce((sum, func) => sum + func.covered, 0);
 
       // Compute coverage indicator for BU
       const buCoverage = buCovered > 0
@@ -202,18 +207,15 @@ export function enhanceWithCoverage(orgHierarchy, championsData) {
       c => c.focusArea === funcName && c.division === 'Corporate'
     );
 
-    // Compute covered headcount
-    const covered = corpChampions.reduce(
-      (sum, c) => sum + (c.headcountCovered || 0),
-      0
-    );
-
     // Find corporate function in summary
     const corpFunction = orgHierarchy.summary.corporate?.find(
       cf => cf.category === funcName
     );
 
     const headcount = corpFunction?.headcount || 0;
+
+    // Champion covers 100% of function headcount if assigned
+    const covered = corpChampions.length > 0 ? headcount : 0;
 
     // Compute coverage indicator
     const coverage = covered > 0

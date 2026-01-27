@@ -8,11 +8,10 @@
       "businessUnits": ["compute-test"],
       "focusArea": "Engineering - Software",
       "timeCommitmentPct": 30,
-      "headcountCovered": 97,
       "status": "confirmed",
       "appointmentDate": "2026-01-21",
       "productLines": ["UltraFlex", "J750", "T2000", "IG-XL"],
-      "notes": "Covers Compute Test Engineering - Software (97 employees, 100% coverage)."
+      "notes": "Champion for Compute Test Engineering - Software. Covers 100% of function headcount from org hierarchy."
     },
     {
       "id": "champion-002",
@@ -21,41 +20,34 @@
       "division": "Robotics",
       "businessUnits": ["ur", "mir"],
       "focusArea": "Engineering - Software",
-      "headcountCovered": 78,
       "status": "confirmed",
       "appointmentDate": "2026-01-21",
-      "notes": "Covers UR + MiR Engineering - Software (78 employees, 100% coverage)."
+      "notes": "Champion for Robotics Engineering - Software (UR + MiR). Covers 100% of function headcount from org hierarchy."
     },
     {
       "id": "champion-003",
       "name": "Martin Nordentoft",
       "email": "martin.nordentoft@teradyne-robotics.com",
       "division": "Robotics",
+      "businessUnits": null,
       "focusArea": "IT",
-      "headcountCovered": 13,
       "status": "confirmed",
       "appointmentDate": "2026-01-21",
-      "notes": "Covers Robotics IT division-level function (13 employees, estimated from corporate IT proportionally)."
+      "notes": "Champion for Robotics IT division-level function. Covers 100% of function headcount from org hierarchy."
     },
     {
       "id": "champion-004",
       "name": "Fleur Nielsen",
       "email": "flni@universal-robots.com",
       "division": "Robotics",
+      "businessUnits": null,
       "focusArea": "Marketing",
-      "headcountCovered": 37,
       "status": "pending",
-      "notes": "Covers Robotics Marketing division-level function (37 employees, 100% coverage)."
+      "notes": "Pending champion for Robotics Marketing division-level function. Would cover 100% of function headcount from org hierarchy."
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-01-25",
-    "note": "totalOrg and coveragePercentage are now calculated dynamically from live CDN data. headcountCovered values updated to match actual org hierarchy function headcounts (100% of assigned function).",
-    "totalCoveredByConfirmedChampions": 188,
-    "coverageBreakdown": {
-      "stephen-hlotyak": "97 (Semiconductor Test > Compute Test > Engineering - Software)",
-      "jacob-pilegaard": "78 (Robotics > Engineering - Software)",
-      "martin-nordentoft": "13 (Robotics > IT, estimated from corporate IT)"
-    }
+    "lastUpdated": "2026-01-27",
+    "note": "Champions are assigned to organizational items (division/function or BU/function). Coverage is calculated dynamically as 100% of the assigned item's current headcount from org-hierarchy.json. No static headcountCovered values are stored."
   }
 }
