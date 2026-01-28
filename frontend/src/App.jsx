@@ -5,10 +5,12 @@ import { enhanceWithCoverage, getChampionHeadcount, generateUnassignedChampions 
 import HierarchicalCoverageTable from './components/champions/HierarchicalCoverageTable'
 import ChampionsTable from './components/champions/ChampionsTable'
 import ChampionCard from './components/champions/ChampionCard'
+import { DashboardSkeleton } from './components/DashboardSkeleton'
 import { useOrgHierarchy, isOrgDataStale, formatLastUpdate } from './api/orgDataClient'
 import { useAuth } from './api/useAuth'
-import AppHeader from './components/reused/AppHeader'
-import HeaderTabs from './components/reused/HeaderTabs'
+import AppHeader from '../../../_shared-components/AppHeader.jsx'
+import HeaderTabs from '../../../_shared-components/HeaderTabs.jsx'
+import AppFooter from '../../../_shared-components/AppFooter.jsx'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -21,6 +23,25 @@ function App() {
   const [selectedChampion, setSelectedChampion] = useState(null)
   const [championsData] = useState(championsDataJson)
   const { user } = useAuth()
+
+  // External links
+  const repoUrl = 'https://github.com/mir-lca/ai-champions-tracker';
+  const subscriptionId = 'fbc14e76-650e-4485-b7a7-ed52038aee03';
+  const resourceGroup = 'cursor-adoption-rg';
+  const azureResources = [
+    {
+      label: 'Static Web App',
+      href: `https://portal.azure.com/#@teradyne.com/resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Web/staticSites/ai-champions-tracker/staticsite`
+    },
+    {
+      label: 'Org Data Function',
+      href: `https://portal.azure.com/#@teradyne.com/resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Web/sites/org-data-sync-function/appServices`
+    },
+    {
+      label: 'Org Data Storage',
+      href: `https://portal.azure.com/#@teradyne.com/resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Storage/storageAccounts/orgdatastoragelca/overview`
+    }
+  ];
 
   // Fetch org hierarchy from CDN
   const { data: orgHierarchyData, isLoading: isLoadingOrg, isError: isOrgError } = useOrgHierarchy()
@@ -104,37 +125,56 @@ function App() {
   // Show loading state while fetching org data
   if (isLoadingOrg) {
     return (
-      <div className="container">
-        <div style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
-          <div className="spinner"></div>
-          <p>Loading organizational data...</p>
-        </div>
+      <div className="app-container">
+        <AppHeader
+          title="AI Champions Coverage Tracker"
+          user={user}
+          currentAppId="ai-champions-tracker"
+        >
+          <div className="header-center-tabs">
+            <HeaderTabs
+              tabs={TABS}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+            />
+          </div>
+        </AppHeader>
+
+        <DashboardSkeleton />
       </div>
     )
   }
 
-  // Show error state if CDN fetch fails
+  // Show error state if CDN fetch fails (but still render header for design testing)
   if (isOrgError || !orgHierarchy.totalEmployees) {
     return (
-      <div className="container">
-        <div style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
-          <p style={{ color: 'var(--color-error)' }}>
-            Failed to load organizational data from CDN. Please try again later.
-          </p>
+      <div className="app-container">
+        <AppHeader
+          title="AI Champions Coverage Tracker"
+          user={user}
+          repoUrl={repoUrl}
+          azureResources={azureResources}
+          currentAppId="ai-champions-tracker"
+        >
+          <div className="header-center-tabs">
+            <HeaderTabs
+              tabs={TABS}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+            />
+          </div>
+        </AppHeader>
+
+        <div className="page-container">
+          <div style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
+            <p style={{ color: 'var(--color-error)' }}>
+              Failed to load organizational data from CDN. Please try again later.
+            </p>
+          </div>
         </div>
       </div>
     )
   }
-
-  const repoUrl = 'https://github.com/mir-lca/ai-champions-tracker';
-  const subscriptionId = 'fbc14e76-650e-4485-b7a7-ed52038aee03';
-  const resourceGroup = 'cursor-adoption-rg';
-  const azureResources = [
-    {
-      label: 'Static Web App',
-      href: `https://portal.azure.com/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Web/staticSites/ai-champions-tracker-swa-lca`
-    }
-  ];
 
   const lastUpdatedText = `Champions: ${new Date(championsData.metadata.lastUpdated).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -143,35 +183,37 @@ function App() {
   })} • Org: ${orgHierarchy.version ? formatLastUpdate(orgHierarchy.version) : 'Unknown'}`;
 
   return (
-    <div className="container">
+    <div className="app-container">
       <AppHeader
         title="AI Champions Coverage Tracker"
-        metadata={lastUpdatedText}
         user={user}
         repoUrl={repoUrl}
         azureResources={azureResources}
         currentAppId="ai-champions-tracker"
       >
-        <HeaderTabs
-          tabs={TABS}
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-        />
+        <div className="header-center-tabs">
+          <HeaderTabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+        </div>
       </AppHeader>
 
-      {/* Stale Data Warning */}
-      {dataIsStale && (
-        <div style={{
-          background: 'var(--color-warning-bg, #fff3cd)',
-          border: '1px solid var(--color-warning-border, #ffc107)',
-          color: 'var(--color-warning-text, #856404)',
-          padding: 'var(--space-md)',
-          borderRadius: 'var(--radius-md, 8px)',
-          margin: 'var(--space-lg)'
-        }}>
-          ⚠️ Organizational data is more than 7 days old. Last updated: {formatLastUpdate(orgHierarchy.version)}
-        </div>
-      )}
+      <div className="container">
+        {/* Stale Data Warning */}
+        {dataIsStale && (
+          <div style={{
+            background: 'var(--color-warning-bg, #fff3cd)',
+            border: '1px solid var(--color-warning-border, #ffc107)',
+            color: 'var(--color-warning-text, #856404)',
+            padding: 'var(--space-md)',
+            borderRadius: 'var(--radius-md, 8px)',
+            margin: 'var(--space-lg)'
+          }}>
+            ⚠️ Organizational data is more than 7 days old. Last updated: {formatLastUpdate(orgHierarchy.version)}
+          </div>
+        )}
 
       {/* Overview Tab */}
       <div className={`tab-content ${activeTab === 'overview' ? 'active' : ''}`}>
@@ -287,6 +329,11 @@ function App() {
             championsData={championsData}
           />
         </div>
+      </div>
+
+        <AppFooter>
+          <span className="footer-metadata">{lastUpdatedText}</span>
+        </AppFooter>
       </div>
     </div>
   )

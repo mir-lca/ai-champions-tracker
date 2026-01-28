@@ -48,6 +48,17 @@ export function useOrgHierarchy() {
     queryKey: ['orgHierarchy'],
 
     queryFn: async () => {
+      // In development, return empty structure to skip Azure Blob Storage errors
+      if (import.meta.env.DEV) {
+        console.log('[Dev Mode] Skipping org hierarchy fetch - using empty structure');
+        return {
+          version: new Date().toISOString(),
+          totalEmployees: 0,
+          employees: [],
+          summary: { divisions: [] }
+        };
+      }
+
       const response = await fetch(ORG_DATA_CDN_URL, {
         headers: {
           'Cache-Control': 'max-age=300' // 5-minute client cache
