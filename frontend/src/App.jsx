@@ -8,9 +8,9 @@ import ChampionCard from './components/champions/ChampionCard'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import { useOrgHierarchy, isOrgDataStale, formatLastUpdate } from './api/orgDataClient'
 import { useAuth } from './api/useAuth'
-import AppHeader from '../../../_shared-components/AppHeader.jsx'
-import HeaderTabs from '../../../_shared-components/HeaderTabs.jsx'
-import AppFooter from '../../../_shared-components/AppFooter.jsx'
+import AppHeader from './components/_shared/AppHeader.jsx'
+import HeaderTabs from './components/_shared/HeaderTabs.jsx'
+import AppFooter from './components/_shared/AppFooter.jsx'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
